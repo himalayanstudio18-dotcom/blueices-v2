@@ -6,12 +6,14 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
+import { canEditContentPage } from '../permissions';
 
 export default function SiteContentPage() {
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
   const { showToast } = useToast();
   const confirm = useConfirm();
   const [page, setPage] = useState('home');
+  const canEditPage = canEditContentPage(role, page);
   const [content, setContent] = useState(null);
   const [error, setError] = useState('');
   const [savedKey, setSavedKey] = useState(null);
@@ -101,7 +103,9 @@ export default function SiteContentPage() {
       </header>
 
       <p className="admin-placeholder-note admin-editor-hint">
-        Changes save as a draft — the live site won't change until you Preview and Publish.
+        {canEditPage
+          ? "Changes save as a draft — the live site won't change until you Preview and Publish."
+          : "You can view this page's content, but your role can't edit it."}
       </p>
 
       {error && <p className="admin-auth-error">{error}</p>}
@@ -142,6 +146,7 @@ export default function SiteContentPage() {
                     {...(s.type === 'textarea' ? { rows: 3 } : {})}
                     defaultValue={shownEn}
                     key={`${s.key}-en-${shownEn}`}
+                    disabled={!canEditPage}
                     onBlur={(e) => e.target.value !== shownEn && save(s.key, { value_en: e.target.value, value_bn: shownBn || null })}
                   />
                 </label>
@@ -152,6 +157,7 @@ export default function SiteContentPage() {
                       {...(s.type === 'textarea' ? { rows: 3 } : {})}
                       defaultValue={shownBn}
                       key={`${s.key}-bn-${shownBn}`}
+                      disabled={!canEditPage}
                       onBlur={(e) => e.target.value !== shownBn && save(s.key, { value_en: shownEn || null, value_bn: e.target.value })}
                     />
                   </label>

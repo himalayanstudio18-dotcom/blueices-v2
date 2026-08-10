@@ -5,6 +5,7 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
+import { can } from '../permissions';
 
 function formatUpdated(d) {
   if (!d) return '—';
@@ -12,7 +13,13 @@ function formatUpdated(d) {
 }
 
 export default function RoomsList() {
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
+  const canCreate = can(role, 'rooms', 'create');
+  const canEdit = can(role, 'rooms', 'edit');
+  const canDelete = can(role, 'rooms', 'delete');
+  const canPublish = can(role, 'rooms', 'publish');
+  const canChangeAvailability = can(role, 'rooms', 'changeAvailability');
+  const canReorder = can(role, 'rooms', 'reorder');
   const { showToast } = useToast();
   const confirm = useConfirm();
   const [rooms, setRooms] = useState(null);
@@ -132,7 +139,7 @@ export default function RoomsList() {
     return list;
   }, [rooms, statusFilter, search, sortBy]);
 
-  const reorderable = statusFilter === 'all' && !search.trim() && sortBy === 'order';
+  const reorderable = canReorder && statusFilter === 'all' && !search.trim() && sortBy === 'order';
 
   return (
     <div className="admin-page">
@@ -141,9 +148,11 @@ export default function RoomsList() {
           <p className="admin-eyebrow">Rooms</p>
           <h1>Manage Rooms</h1>
         </div>
-        <Link to="/admin/rooms/new" className="admin-btn-primary admin-btn-link" aria-label="Add a new room">
-          <span aria-hidden="true">+</span> Add Room
-        </Link>
+        {canCreate && (
+          <Link to="/admin/rooms/new" className="admin-btn-primary admin-btn-link" aria-label="Add a new room">
+            <span aria-hidden="true">+</span> Add Room
+          </Link>
+        )}
       </header>
 
       {error && (
@@ -164,7 +173,7 @@ export default function RoomsList() {
         <div className="admin-empty-state">
           <p className="admin-empty-state-title">No rooms added yet</p>
           <p className="admin-empty-state-sub">Get started by adding your first room.</p>
-          <Link to="/admin/rooms/new" className="admin-btn-primary admin-btn-link">+ Add your first room</Link>
+          {canCreate && <Link to="/admin/rooms/new" className="admin-btn-primary admin-btn-link">+ Add your first room</Link>}
         </div>
       )}
 
@@ -238,17 +247,25 @@ export default function RoomsList() {
                 </div>
               )}
               <div className="admin-room-row-actions">
-                <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => toggleAvailable(room)} disabled={busy}>
-                  {room.is_available ? 'Mark Unavailable' : 'Mark Available'}
-                </button>
-                <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => togglePublished(room)} disabled={busy}>
-                  {room.is_published ? 'Unpublish' : 'Publish'}
-                </button>
-                <Link to={`/admin/rooms/${room.id}`} className="admin-btn-ghost admin-btn-ghost--dark">Edit</Link>
-                <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => handleDuplicate(room)} disabled={busy}>Duplicate</button>
-                <button className="admin-btn-ghost admin-btn-ghost--danger" onClick={() => handleDelete(room)} disabled={busy}>
-                  {busy ? 'Deleting…' : 'Delete'}
-                </button>
+                {canChangeAvailability && (
+                  <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => toggleAvailable(room)} disabled={busy}>
+                    {room.is_available ? 'Mark Unavailable' : 'Mark Available'}
+                  </button>
+                )}
+                {canPublish && (
+                  <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => togglePublished(room)} disabled={busy}>
+                    {room.is_published ? 'Unpublish' : 'Publish'}
+                  </button>
+                )}
+                {canEdit && <Link to={`/admin/rooms/${room.id}`} className="admin-btn-ghost admin-btn-ghost--dark">Edit</Link>}
+                {canCreate && (
+                  <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => handleDuplicate(room)} disabled={busy}>Duplicate</button>
+                )}
+                {canDelete && (
+                  <button className="admin-btn-ghost admin-btn-ghost--danger" onClick={() => handleDelete(room)} disabled={busy}>
+                    {busy ? 'Deleting…' : 'Delete'}
+                  </button>
+                )}
               </div>
             </div>
           );

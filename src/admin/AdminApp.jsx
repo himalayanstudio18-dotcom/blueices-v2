@@ -39,12 +39,19 @@ export default function AdminApp() {
           <Route path="rooms/:id/preview" element={<RoomPreview />} />
           <Route path="gallery" element={<GalleryPage />} />
           <Route path="inquiries" element={<InquiriesPage />} />
-          <Route path="content" element={<SiteContentPage />} />
+          <Route
+            path="content"
+            element={
+              <ProtectedRoute section="content">
+                <SiteContentPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="content/preview/:page" element={<SiteContentPreview />} />
           <Route
             path="staff"
             element={
-              <ProtectedRoute requireRole="owner">
+              <ProtectedRoute section="staff">
                 <StaffPage />
               </ProtectedRoute>
             }
@@ -53,7 +60,7 @@ export default function AdminApp() {
           <Route
             path="settings"
             element={
-              <ProtectedRoute requireRole="owner">
+              <ProtectedRoute section="settings">
                 <SettingsPage />
               </ProtectedRoute>
             }

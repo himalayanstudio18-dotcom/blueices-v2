@@ -10,6 +10,7 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
+import { can } from '../permissions';
 
 const emptyForm = {
   name_en: '', name_bn: '', slug: '', room_type: '',
@@ -48,9 +49,16 @@ export default function RoomEditor() {
   const { id } = useParams();
   const isNew = !id;
   const navigate = useNavigate();
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
   const { showToast } = useToast();
   const confirm = useConfirm();
+  const canEdit = can(role, 'rooms', 'edit');
+  const canCreate = can(role, 'rooms', 'create');
+  const canChangePrice = can(role, 'rooms', 'changePrice');
+  const canChangeAvailability = can(role, 'rooms', 'changeAvailability');
+  const canPublish = can(role, 'rooms', 'publish');
+  const canManageImages = can(role, 'rooms', 'manageImages');
+  const allowed = isNew ? canCreate : canEdit;
 
   const [form, setForm] = useState(emptyForm);
   const [images, setImages] = useState([]);
@@ -260,6 +268,15 @@ export default function RoomEditor() {
 
   if (loading) return <div className="admin-page"><p>Loading…</p></div>;
 
+  if (!allowed) {
+    return (
+      <div className="admin-fullscreen-state">
+        <h1>Restricted</h1>
+        <p>Your role doesn't have access to {isNew ? 'add new rooms' : 'edit rooms'}.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-page">
       <header className="admin-page-header admin-page-header--row">
@@ -358,11 +375,11 @@ export default function RoomEditor() {
 
           <label className="admin-field">
             <span>Price (₹/night)</span>
-            <input type="number" min="0" value={form.price} onChange={(e) => set('price', e.target.value)} required />
+            <input type="number" min="0" value={form.price} onChange={(e) => set('price', e.target.value)} required disabled={!canChangePrice} />
           </label>
           <label className="admin-field">
             <span>Weekend Price (₹/night)</span>
-            <input type="number" min="0" value={form.weekend_price} onChange={(e) => set('weekend_price', e.target.value)} placeholder="Optional — leave blank to use standard price" />
+            <input type="number" min="0" value={form.weekend_price} onChange={(e) => set('weekend_price', e.target.value)} placeholder="Optional — leave blank to use standard price" disabled={!canChangePrice} />
           </label>
 
           <label className="admin-field">
@@ -371,11 +388,11 @@ export default function RoomEditor() {
           </label>
           <div className="admin-field-group">
             <label className="admin-field admin-field--checkbox">
-              <input type="checkbox" checked={form.is_published} onChange={(e) => set('is_published', e.target.checked)} />
+              <input type="checkbox" checked={form.is_published} onChange={(e) => set('is_published', e.target.checked)} disabled={!canPublish} />
               <span>Published (visible on the live site)</span>
             </label>
             <label className="admin-field admin-field--checkbox">
-              <input type="checkbox" checked={form.is_available} onChange={(e) => set('is_available', e.target.checked)} />
+              <input type="checkbox" checked={form.is_available} onChange={(e) => set('is_available', e.target.checked)} disabled={!canChangeAvailability} />
               <span>Available (bookable right now)</span>
             </label>
             <label className="admin-field admin-field--checkbox">
@@ -457,22 +474,26 @@ export default function RoomEditor() {
                 <img src={roomImagePublicUrl(img.storage_path)} alt="" />
                 {img.is_cover && <span className="admin-image-cover-badge">Cover</span>}
                 {img.is_draft && <span className="admin-image-pending-badge">Pending</span>}
-                <div className="admin-image-card-actions">
-                  <button type="button" onClick={() => handleMove(i, -1)} disabled={i === 0} aria-label="Move earlier">←</button>
-                  <button type="button" onClick={() => handleMove(i, 1)} disabled={i === images.length - 1} aria-label="Move later">→</button>
-                  {!img.is_cover && (
-                    <button type="button" onClick={() => handleSetCover(img)}>Set cover</button>
-                  )}
-                  <button type="button" onClick={() => handleDeleteImage(img)} className="admin-image-card-delete">Delete</button>
-                </div>
+                {canManageImages && (
+                  <div className="admin-image-card-actions">
+                    <button type="button" onClick={() => handleMove(i, -1)} disabled={i === 0} aria-label="Move earlier">←</button>
+                    <button type="button" onClick={() => handleMove(i, 1)} disabled={i === images.length - 1} aria-label="Move later">→</button>
+                    {!img.is_cover && (
+                      <button type="button" onClick={() => handleSetCover(img)}>Set cover</button>
+                    )}
+                    <button type="button" onClick={() => handleDeleteImage(img)} className="admin-image-card-delete">Delete</button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          <label className="admin-btn-primary admin-btn-link admin-upload-btn">
-            {uploading ? 'Uploading…' : '+ Upload Photos'}
-            <input type="file" accept="image/*" multiple hidden onChange={handleUpload} disabled={uploading} />
-          </label>
+          {canManageImages && (
+            <label className="admin-btn-primary admin-btn-link admin-upload-btn">
+              {uploading ? 'Uploading…' : '+ Upload Photos'}
+              <input type="file" accept="image/*" multiple hidden onChange={handleUpload} disabled={uploading} />
+            </label>
+          )}
         </section>
       )}
     </div>

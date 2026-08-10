@@ -1,8 +1,9 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthContext';
+import { canView } from './permissions';
 
-export default function ProtectedRoute({ children, requireRole }) {
+export default function ProtectedRoute({ children, section }) {
   const { loading, isAuthenticated, isRecognizedStaff, role } = useAdminAuth();
   const location = useLocation();
 
@@ -31,11 +32,11 @@ export default function ProtectedRoute({ children, requireRole }) {
     );
   }
 
-  if (requireRole && role !== requireRole) {
+  if (section && !canView(role, section)) {
     return (
       <div className="admin-fullscreen-state">
         <h1>Restricted</h1>
-        <p>This section is only available to the {requireRole}.</p>
+        <p>Your role doesn't have access to this section.</p>
       </div>
     );
   }

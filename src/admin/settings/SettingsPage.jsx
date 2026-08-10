@@ -6,8 +6,8 @@ import { logActivity } from '../activityLogApi';
 import { supabase } from '../../lib/supabaseClient';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
+import { visibleSettingsTabs } from '../permissions';
 
-const TABS = ['Property', 'Booking', 'Social', 'Notifications', 'Account'];
 const MAX_NAME_LENGTH = 80;
 
 function validateField(field, value) {
@@ -30,10 +30,11 @@ function swapItems(list, i, j) {
 }
 
 export default function SettingsPage() {
-  const { staff, user, signOut, refreshStaff } = useAdminAuth();
+  const { staff, user, role, signOut, refreshStaff } = useAdminAuth();
+  const TABS = visibleSettingsTabs(role);
   const { showToast } = useToast();
   const confirm = useConfirm();
-  const [tab, setTab] = useState('Property');
+  const [tab, setTab] = useState(TABS[0]);
   const [settings, setSettings] = useState(null);
   const [error, setError] = useState('');
   const [savedField, setSavedField] = useState(null);

@@ -8,11 +8,16 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
+import { can } from '../permissions';
 
 const CATEGORIES = ['exterior', 'interior', 'nature', 'room'];
 
 export default function GalleryPage() {
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
+  const canEdit = can(role, 'gallery', 'edit');
+  const canUpload = can(role, 'gallery', 'upload');
+  const canDelete = can(role, 'gallery', 'delete');
+  const canReorder = can(role, 'gallery', 'reorder');
   const { showToast } = useToast();
   const confirm = useConfirm();
   const [images, setImages] = useState(null);
@@ -150,10 +155,12 @@ export default function GalleryPage() {
           <p className="admin-eyebrow">Gallery</p>
           <h1>Manage Gallery</h1>
         </div>
-        <label className="admin-btn-primary admin-btn-link admin-upload-btn">
-          {uploading ? 'Uploading…' : '+ Upload Photos'}
-          <input type="file" accept="image/*" multiple hidden onChange={handleUpload} disabled={uploading} />
-        </label>
+        {canUpload && (
+          <label className="admin-btn-primary admin-btn-link admin-upload-btn">
+            {uploading ? 'Uploading…' : '+ Upload Photos'}
+            <input type="file" accept="image/*" multiple hidden onChange={handleUpload} disabled={uploading} />
+          </label>
+        )}
       </header>
 
       {error && <p className="admin-auth-error">{error}</p>}
@@ -206,6 +213,7 @@ export default function GalleryPage() {
                   <input
                     defaultValue={shownCaptionEn ?? ''}
                     key={`caption_en-${shownCaptionEn}`}
+                    disabled={!canEdit}
                     onBlur={(e) => e.target.value !== (shownCaptionEn ?? '') && handleDraftField(img, 'caption_en', e.target.value)}
                   />
                 </label>
@@ -214,6 +222,7 @@ export default function GalleryPage() {
                   <input
                     defaultValue={shownCaptionBn ?? ''}
                     key={`caption_bn-${shownCaptionBn}`}
+                    disabled={!canEdit}
                     onBlur={(e) => e.target.value !== (shownCaptionBn ?? '') && handleDraftField(img, 'caption_bn', e.target.value)}
                   />
                 </label>
@@ -223,12 +232,13 @@ export default function GalleryPage() {
                     defaultValue={shownAltEn ?? ''}
                     key={`alt_text_en-${shownAltEn}`}
                     placeholder="Describes the photo for screen readers"
+                    disabled={!canEdit}
                     onBlur={(e) => e.target.value !== (shownAltEn ?? '') && handleDraftField(img, 'alt_text_en', e.target.value)}
                   />
                 </label>
                 <label className="admin-field">
                   <span>Category</span>
-                  <select value={shownCategory} onChange={(e) => handleDraftField(img, 'category', e.target.value)}>
+                  <select value={shownCategory} onChange={(e) => handleDraftField(img, 'category', e.target.value)} disabled={!canEdit}>
                     {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat[0].toUpperCase() + cat.slice(1)}</option>
                     ))}
@@ -237,33 +247,41 @@ export default function GalleryPage() {
               </div>
 
               <div className="admin-gallery-card-actions">
-                <div className="admin-room-row-reorder admin-gallery-reorder">
-                  <button type="button" onClick={() => handleMove(img, -1)} aria-label="Move earlier">↑</button>
-                  <button type="button" onClick={() => handleMove(img, 1)} aria-label="Move later">↓</button>
-                </div>
-                <button
-                  className="admin-btn-ghost admin-btn-ghost--dark"
-                  onClick={() => handleField(img, 'is_featured', !img.is_featured)}
-                  disabled={busy}
-                >
-                  {img.is_featured ? 'Unfeature' : 'Feature'}
-                </button>
-                <button
-                  className="admin-btn-ghost admin-btn-ghost--dark"
-                  onClick={() => handleField(img, 'is_published', !img.is_published, {
-                    title: img.is_published ? 'Image unpublished' : 'Image published',
-                    message: img.is_published ? 'This photo is no longer visible on the live site.' : 'This photo is now visible on the live site.',
-                  })}
-                  disabled={busy}
-                >
-                  {img.is_published ? 'Unpublish' : 'Publish'}
-                </button>
-                <button className="admin-btn-ghost admin-btn-ghost--danger" onClick={() => handleDelete(img)} disabled={busy}>
-                  {busy ? 'Deleting…' : 'Delete'}
-                </button>
+                {canReorder && (
+                  <div className="admin-room-row-reorder admin-gallery-reorder">
+                    <button type="button" onClick={() => handleMove(img, -1)} aria-label="Move earlier">↑</button>
+                    <button type="button" onClick={() => handleMove(img, 1)} aria-label="Move later">↓</button>
+                  </div>
+                )}
+                {canEdit && (
+                  <button
+                    className="admin-btn-ghost admin-btn-ghost--dark"
+                    onClick={() => handleField(img, 'is_featured', !img.is_featured)}
+                    disabled={busy}
+                  >
+                    {img.is_featured ? 'Unfeature' : 'Feature'}
+                  </button>
+                )}
+                {canEdit && (
+                  <button
+                    className="admin-btn-ghost admin-btn-ghost--dark"
+                    onClick={() => handleField(img, 'is_published', !img.is_published, {
+                      title: img.is_published ? 'Image unpublished' : 'Image published',
+                      message: img.is_published ? 'This photo is no longer visible on the live site.' : 'This photo is now visible on the live site.',
+                    })}
+                    disabled={busy}
+                  >
+                    {img.is_published ? 'Unpublish' : 'Publish'}
+                  </button>
+                )}
+                {canDelete && (
+                  <button className="admin-btn-ghost admin-btn-ghost--danger" onClick={() => handleDelete(img)} disabled={busy}>
+                    {busy ? 'Deleting…' : 'Delete'}
+                  </button>
+                )}
               </div>
 
-              {hasDraft && (
+              {hasDraft && canEdit && (
                 <div className="admin-gallery-card-actions admin-gallery-card-draft-actions">
                   <span className="admin-preview-note">You have unpublished edits to this photo's details.</span>
                   <button className="admin-btn-ghost admin-btn-ghost--danger" onClick={() => handleDiscardDraft(img)} disabled={busy}>

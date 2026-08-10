@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthContext';
-
-const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard', end: true },
-  { to: '/admin/rooms', label: 'Rooms' },
-  { to: '/admin/gallery', label: 'Gallery' },
-  { to: '/admin/inquiries', label: 'Inquiries' },
-  { to: '/admin/content', label: 'Site Content' },
-  { to: '/admin/activity', label: 'Activity Log' },
-];
+import { NAV_ITEMS, canView } from './permissions';
 
 export default function AdminLayout() {
   const { staff, role, signOut } = useAdminAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const location = useLocation();
+  const visibleNavItems = NAV_ITEMS.filter((item) => canView(role, item.section));
 
   useEffect(() => { setNavOpen(false); }, [location.pathname]);
 
@@ -49,7 +42,7 @@ export default function AdminLayout() {
         <button type="button" className="admin-sidebar-close" aria-label="Close menu" onClick={() => setNavOpen(false)}>✕</button>
 
         <nav className="admin-nav" aria-label="Admin sections">
-          {NAV_ITEMS.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -59,22 +52,6 @@ export default function AdminLayout() {
               {item.label}
             </NavLink>
           ))}
-          {role === 'owner' && (
-            <NavLink
-              to="/admin/staff"
-              className={({ isActive }) => `admin-nav-link${isActive ? ' is-active' : ''}`}
-            >
-              Staff
-            </NavLink>
-          )}
-          {role === 'owner' && (
-            <NavLink
-              to="/admin/settings"
-              className={({ isActive }) => `admin-nav-link${isActive ? ' is-active' : ''}`}
-            >
-              Settings
-            </NavLink>
-          )}
         </nav>
 
         <div className="admin-sidebar-footer">

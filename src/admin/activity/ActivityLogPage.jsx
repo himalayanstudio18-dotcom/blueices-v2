@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { listActivityLog } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
+import { useAdminAuth } from '../AdminAuthContext';
+import { activityScope } from '../permissions';
 
 function formatWhen(d) {
   return new Date(d).toLocaleString('en-IN', {
@@ -14,8 +16,10 @@ function describe(entry) {
 }
 
 export default function ActivityLogPage() {
+  const { role } = useAdminAuth();
   const [entries, setEntries] = useState(null);
   const [error, setError] = useState('');
+  const limitedScope = activityScope(role) === 'own';
 
   useEffect(() => {
     listActivityLog().then(setEntries).catch((err) => setError(friendlyError(err, 'load the activity log')));
@@ -27,6 +31,8 @@ export default function ActivityLogPage() {
         <p className="admin-eyebrow">Activity Log</p>
         <h1>Who Changed What</h1>
       </header>
+
+      {limitedScope && <p className="admin-placeholder-note">Showing your own activity only.</p>}
 
       {error && <p className="admin-auth-error">{error}</p>}
       {entries === null && !error && <p>Loading…</p>}

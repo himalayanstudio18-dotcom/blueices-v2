@@ -4,6 +4,7 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast } from '../ui/AdminUIProvider';
+import { can } from '../permissions';
 
 const STATUSES = ['new', 'contacted', 'confirmed', 'cancelled', 'archived'];
 
@@ -13,7 +14,15 @@ function formatDate(d) {
 }
 
 export default function InquiriesPage() {
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
+  const canSearchFilter = can(role, 'inquiries', 'search');
+  const canUpdateStatus = can(role, 'inquiries', 'updateStatus');
+  const canArchive = can(role, 'inquiries', 'archive');
+  const canAddNotes = can(role, 'inquiries', 'addNotes');
+  const canCall = can(role, 'inquiries', 'call');
+  const canWhatsapp = can(role, 'inquiries', 'whatsapp');
+  const canEmail = can(role, 'inquiries', 'email');
+  const visibleStatuses = canArchive ? STATUSES : STATUSES.filter((s) => s !== 'archived');
   const { showToast } = useToast();
   const [inquiries, setInquiries] = useState(null);
   const [error, setError] = useState('');
@@ -94,27 +103,29 @@ export default function InquiriesPage() {
 
       {error && <p className="admin-auth-error">{error}</p>}
 
-      <div className="admin-inquiries-toolbar">
-        <div className="admin-filter-tabs">
-          {['all', ...STATUSES].map((s) => (
-            <button
-              key={s}
-              type="button"
-              className={`admin-filter-tab${filter === s ? ' is-active' : ''}`}
-              onClick={() => setFilter(s)}
-            >
-              {s[0].toUpperCase() + s.slice(1)} ({counts[s] ?? 0})
-            </button>
-          ))}
+      {canSearchFilter && (
+        <div className="admin-inquiries-toolbar">
+          <div className="admin-filter-tabs">
+            {['all', ...STATUSES].map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={`admin-filter-tab${filter === s ? ' is-active' : ''}`}
+                onClick={() => setFilter(s)}
+              >
+                {s[0].toUpperCase() + s.slice(1)} ({counts[s] ?? 0})
+              </button>
+            ))}
+          </div>
+          <input
+            className="admin-search-input"
+            type="search"
+            placeholder="Search name, phone, or email…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <input
-          className="admin-search-input"
-          type="search"
-          placeholder="Search name, phone, or email…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      )}
 
       {inquiries === null && !error && <p>Loading…</p>}
       {inquiries?.length === 0 && <p>No inquiries yet.</p>}
@@ -141,41 +152,45 @@ export default function InquiriesPage() {
               {inq.message && <p className="admin-inquiry-message">{inq.message}</p>}
 
               <div className="admin-inquiry-contact-actions">
-                {inq.phone && (
-                  <>
-                    <a className="admin-btn-ghost admin-btn-ghost--dark" href={`tel:${inq.phone}`}>Call</a>
-                    <a className="admin-btn-ghost admin-btn-ghost--dark" href={`https://wa.me/${inq.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-                  </>
+                {inq.phone && canCall && (
+                  <a className="admin-btn-ghost admin-btn-ghost--dark" href={`tel:${inq.phone}`}>Call</a>
                 )}
-                {inq.email && (
+                {inq.phone && canWhatsapp && (
+                  <a className="admin-btn-ghost admin-btn-ghost--dark" href={`https://wa.me/${inq.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                )}
+                {inq.email && canEmail && (
                   <a className="admin-btn-ghost admin-btn-ghost--dark" href={`mailto:${inq.email}`}>Email</a>
                 )}
               </div>
 
-              <label className="admin-field admin-inquiry-notes">
-                <span>Internal Notes</span>
-                <textarea
-                  rows={2}
-                  defaultValue={inq.internal_notes ?? ''}
-                  onChange={(e) => setNotesDraft((d) => ({ ...d, [inq.id]: e.target.value }))}
-                  onBlur={() => saveNotes(inq)}
-                  placeholder="Private notes — not visible to the guest"
-                />
-              </label>
+              {canAddNotes && (
+                <label className="admin-field admin-inquiry-notes">
+                  <span>Internal Notes</span>
+                  <textarea
+                    rows={2}
+                    defaultValue={inq.internal_notes ?? ''}
+                    onChange={(e) => setNotesDraft((d) => ({ ...d, [inq.id]: e.target.value }))}
+                    onBlur={() => saveNotes(inq)}
+                    placeholder="Private notes — not visible to the guest"
+                  />
+                </label>
+              )}
 
-              <div className="admin-inquiry-status-actions">
-                {STATUSES.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    className={`admin-btn-ghost admin-btn-ghost--dark${inq.status === s ? ' is-active' : ''}`}
-                    onClick={() => setStatus(inq, s)}
-                    disabled={busy || inq.status === s}
-                  >
-                    {s[0].toUpperCase() + s.slice(1)}
-                  </button>
-                ))}
-              </div>
+              {canUpdateStatus && (
+                <div className="admin-inquiry-status-actions">
+                  {visibleStatuses.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`admin-btn-ghost admin-btn-ghost--dark${inq.status === s ? ' is-active' : ''}`}
+                      onClick={() => setStatus(inq, s)}
+                      disabled={busy || inq.status === s}
+                    >
+                      {s[0].toUpperCase() + s.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}
