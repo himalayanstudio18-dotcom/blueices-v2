@@ -40,6 +40,15 @@ export default function Hero() {
         <p className="hero-location">{tx.location}</p>
         {heroHeading ? (
           <h1 className="hero-headline">{heroHeading}</h1>
+        ) : tx.line3 ? (
+          /* Bengali-only 3-line variant (see translations/index.js
+             bn.hero.line3) — English never sets line3, so its 2-line
+             render below is unaffected. */
+          <h1 className="hero-headline">
+            {tx.line1}<br/>
+            {tx.line2}<br/>
+            <em>{tx.line3}</em>
+          </h1>
         ) : (
           <h1 className="hero-headline">
             {tx.line1}<br/>
