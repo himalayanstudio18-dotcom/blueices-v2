@@ -4760,7 +4760,21 @@ section + section {
   .nav-logo-sub { display: none; }
   .nav-logo-mark { font-size: 1.05rem; }
 
-  /* Hero */
+  /* Hero — on short mobile viewports (address-bar-visible svh, small
+     phones) centering the content block let the eyebrow line render
+     underneath the fixed pill navbar. Anchoring to the top and giving
+     the content its own clearance guarantees the gap regardless of
+     viewport height; the scroll hint / mountain silhouette stay
+     pinned to the bottom via their own absolute positioning, so this
+     doesn't introduce any new empty space there. Clearance = navbar
+     top offset (0.75rem) + navbar's rendered height (~4.1rem) + the
+     requested 24-32px of breathing room, plus notch safe area. */
+  .hero {
+    align-items: flex-start;
+  }
+  .hero-content {
+    padding-top: calc(6.5rem + env(safe-area-inset-top, 0px));
+  }
   .hero-headline { font-size: clamp(2.4rem, 9vw, 3.2rem); }
   .hero-trust { font-size: 0.7rem; }
   .hero-actions { gap: 0.75rem; }
