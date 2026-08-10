@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { logActivity } from './activityLogApi';
 
 const AdminAuthContext = createContext(null);
 
@@ -33,13 +34,20 @@ export function AdminAuthProvider({ children }) {
       setLoading(false);
     });
 
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+    const { data: sub } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!active) return;
       setSession(newSession);
       if (newSession) {
         setLoading(true);
-        setStaff(await loadStaffRow(newSession.user.id));
+        const staffRow = await loadStaffRow(newSession.user.id);
+        setStaff(staffRow);
         setLoading(false);
+        /* Only a genuine sign-in fires 'SIGNED_IN' — restoring an
+           existing session on page load fires 'INITIAL_SESSION'
+           instead, so a refresh never logs a spurious login. */
+        if (event === 'SIGNED_IN' && staffRow) {
+          logActivity(staffRow, { action: 'login', entity: 'account', detail: 'Signed in' });
+        }
       } else {
         setStaff(null);
       }
@@ -57,6 +65,7 @@ export function AdminAuthProvider({ children }) {
   }
 
   async function signOut() {
+    if (staff) logActivity(staff, { action: 'logout', entity: 'account', detail: 'Signed out' });
     await supabase.auth.signOut();
   }
 

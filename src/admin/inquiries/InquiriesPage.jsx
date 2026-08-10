@@ -46,7 +46,7 @@ export default function InquiriesPage() {
     setBusyId(inquiry.id);
     try {
       await updateInquiry(inquiry.id, { status });
-      logActivity(staff, { action: 'update', entity: 'inquiry', entityId: inquiry.id, detail: `${inquiry.name} → ${status}` });
+      logActivity(staff, { action: 'update', entity: 'inquiry', entityId: inquiry.id, detail: `${inquiry.name} → ${status}`, oldValue: inquiry.status, newValue: status });
       showToast({
         type: 'success',
         title: 'Inquiry status changed',

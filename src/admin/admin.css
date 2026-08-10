@@ -1807,36 +1807,172 @@
   color: #2E6B2E;
 }
 
+.admin-activity-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+.admin-activity-filters .admin-search-input {
+  flex: 1 1 260px;
+}
+
+.admin-activity-custom-range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .admin-activity-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
   margin-top: 1rem;
 }
 
-.admin-activity-row {
+.admin-activity-day-group {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-activity-day-heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bark-light);
+}
+
+.admin-activity-card {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.9fr) minmax(200px, 2fr) auto auto;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem 1rem;
+  width: 100%;
   background: #fff;
   border: 1px solid rgba(74, 52, 34, 0.1);
   border-radius: 0.6rem;
-  padding: 0.65rem 1rem;
-  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease-expo), transform 0.2s var(--ease-expo);
 }
 
-.admin-activity-row p {
+.admin-activity-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-1px);
+}
+
+.admin-activity-card:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.admin-activity-card-user {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: flex-start;
+}
+
+.admin-activity-card-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.admin-role-badge.is-role-owner { background: var(--amber-pale); color: #8a5f1f; }
+.admin-role-badge.is-role-manager { background: rgba(74, 141, 74, 0.14); color: #2E6B2E; }
+.admin-role-badge.is-role-editor { background: rgba(74, 52, 34, 0.1); color: var(--bark); }
+.admin-role-badge.is-role-staff { background: rgba(74, 52, 34, 0.06); color: var(--ink-soft); }
+
+.admin-activity-card-body {
+  min-width: 0;
+}
+
+.admin-activity-card-headline {
   margin: 0;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  flex: 1;
-  min-width: 200px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
 }
 
-.admin-activity-time {
+.admin-activity-card-item {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-activity-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  white-space: nowrap;
+}
+
+.admin-activity-card-date {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.admin-activity-card-time {
   font-size: 0.75rem;
   color: var(--bark-light);
-  white-space: nowrap;
+}
+
+.admin-activity-section-badge {
+  justify-self: end;
+}
+
+.admin-activity-detail-dialog {
+  width: min(480px, 100%);
+}
+
+.admin-activity-detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0 0;
+}
+
+.admin-activity-detail-grid dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bark-light);
+}
+
+.admin-activity-detail-grid dd {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  .admin-activity-card {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .admin-activity-card-meta {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  .admin-activity-section-badge {
+    justify-self: start;
+  }
 }
 
 /* ─── Loading / error / empty states ─────────────────────────── */

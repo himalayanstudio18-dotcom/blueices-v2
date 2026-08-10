@@ -44,7 +44,7 @@ export default function GalleryPage() {
     setError('');
     try {
       await uploadGalleryImages(files);
-      logActivity(staff, { action: 'create', entity: 'gallery_image', detail: `${files.length} photo${files.length > 1 ? 's' : ''} uploaded` });
+      logActivity(staff, { action: 'upload', entity: 'gallery_image', detail: `${files.length} photo${files.length > 1 ? 's' : ''} uploaded` });
       showToast({
         type: 'success',
         title: files.length > 1 ? 'Images uploaded' : 'Image uploaded',
@@ -64,7 +64,11 @@ export default function GalleryPage() {
   async function handleField(img, field, value, toastConfig) {
     setBusyId(img.id);
     try {
+      const previous = img[field];
       await updateGalleryImage(img.id, { [field]: value });
+      if (field === 'is_published') {
+        logActivity(staff, { action: value ? 'publish' : 'unpublish', entity: 'gallery_image', entityId: img.id, detail: img.caption_en, oldValue: previous, newValue: value });
+      }
       if (toastConfig) showToast({ type: 'success', ...toastConfig });
       await load();
     } catch (err) {

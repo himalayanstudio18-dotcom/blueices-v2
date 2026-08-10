@@ -66,9 +66,10 @@ export default function SettingsPage() {
       return;
     }
     try {
+      const previous = shown(field);
       await saveSettingsDraft({ [field]: value });
       setSettings((s) => ({ ...s, draft_data: { ...(s.draft_data ?? {}), [field]: value } }));
-      logActivity(staff, { action: 'update', entity: 'settings', detail: `${field} (draft)` });
+      logActivity(staff, { action: 'settings_change', entity: 'settings', detail: `${field} (draft)`, oldValue: previous, newValue: value });
       setSavedField(field);
       setTimeout(() => setSavedField((f) => (f === field ? null : f)), 1500);
     } catch (err) {
@@ -82,7 +83,7 @@ export default function SettingsPage() {
     setPublishing(true);
     try {
       await publishSettingsDraft();
-      logActivity(staff, { action: 'publish', entity: 'settings', detail: `${Object.keys(draft).length} field(s)` });
+      logActivity(staff, { action: 'settings_change', entity: 'settings', detail: `${Object.keys(draft).length} field(s) published` });
       showToast({ type: 'success', title: 'Changes published', message: 'Changes published successfully.' });
       await load();
     } catch (err) {
@@ -339,7 +340,9 @@ function AccountTab({ user, staff, signOut, refreshStaff }) {
     setNameError('');
     setNameStatus('saving');
     try {
+      const previousName = staff?.name ?? '';
       await updateStaffName(staff.id, trimmedName);
+      logActivity(staff, { action: 'update', entity: 'account', detail: 'Display name updated', oldValue: previousName, newValue: trimmedName });
       await refreshStaff();
       setName(trimmedName);
       setNameStatus('saved');
@@ -360,6 +363,7 @@ function AccountTab({ user, staff, signOut, refreshStaff }) {
     try {
       const { error: err } = await supabase.auth.updateUser({ password });
       if (err) throw err;
+      logActivity(staff, { action: 'update', entity: 'account', detail: 'Password changed' });
       setPassword('');
       setStatus('saved');
       showToast({ type: 'success', title: 'Password updated', message: 'Your password was changed successfully.' });
