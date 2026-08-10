@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { SECTIONS, PAGES } from './sectionConfig';
 import { listSiteContent, publishAllDrafts, revertAllDrafts } from './siteContentApi';
 import { SiteContentPreviewProvider } from '../../lib/useSiteContent';
-import { LanguageProvider } from '../../context/LanguageContext';
+import { LanguageProvider, useLanguage } from '../../context/LanguageContext';
 import Hero from '../../components/Hero';
 import Introduction from '../../components/Introduction';
 import ExperiencesHero from '../../components/ExperiencesHero';
@@ -24,6 +24,18 @@ const VISUAL_PREVIEW = {
   experiences: () => <ExperiencesHero />,
   policies: () => <PoliciesBox />,
 };
+
+/* Must render inside <LanguageProvider> — that's what owns the lang
+   state VisualComponent reads via useLanguage()/useSiteContent(). */
+function PreviewLangSwitcher() {
+  const { lang, setLang } = useLanguage();
+  return (
+    <div className="admin-preview-lang-toggle" role="group" aria-label="Preview language">
+      <button type="button" className={lang === 'en' ? 'is-active' : ''} onClick={() => setLang('en')}>English</button>
+      <button type="button" className={lang === 'bn' ? 'is-active' : ''} onClick={() => setLang('bn')}>বাংলা</button>
+    </div>
+  );
+}
 
 export default function SiteContentPreview() {
   const { page } = useParams();
@@ -84,20 +96,25 @@ export default function SiteContentPreview() {
       publishing={publishing}
       hasDraft={hasDraft}
     >
-      <p className="admin-preview-note">
-        {pageLabel} preview — {hasDraft ? 'showing your unpublished draft' : 'no pending draft, showing the live version'}.
-      </p>
-
       {VisualComponent ? (
-        <div className="admin-preview-frame">
-          <LanguageProvider>
+        <LanguageProvider>
+          <div className="admin-preview-toolbar">
+            <p className="admin-preview-note">
+              {pageLabel} preview — {hasDraft ? 'showing your unpublished draft' : 'no pending draft, showing the live version'}.
+            </p>
+            <PreviewLangSwitcher />
+          </div>
+          <div className="admin-preview-frame">
             <SiteContentPreviewProvider>
               <VisualComponent />
             </SiteContentPreviewProvider>
-          </LanguageProvider>
-        </div>
+          </div>
+        </LanguageProvider>
       ) : (
         <div className="admin-content-card">
+          <p className="admin-preview-note">
+            {pageLabel} preview — {hasDraft ? 'showing your unpublished draft' : 'no pending draft, showing the live version'}.
+          </p>
           <p className="admin-placeholder-note">
             This page only has SEO meta fields, which don't have a visible on-page appearance to preview —
             they affect how the page shows up in search results and link previews instead. Pending changes:
