@@ -13,6 +13,7 @@ import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast } from '../ui/AdminUIProvider';
 import PreviewShell from '../ui/PreviewShell';
+import { canPublish } from '../permissions';
 
 /* Only pages with real visual content get a rendered preview — the
    'contact'/'stays' pages currently only carry SEO meta fields
@@ -40,7 +41,7 @@ function PreviewLangSwitcher() {
 export default function SiteContentPreview() {
   const { page } = useParams();
   const navigate = useNavigate();
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
   const { showToast } = useToast();
   const [content, setContent] = useState(null);
   const [publishing, setPublishing] = useState(false);
@@ -95,6 +96,7 @@ export default function SiteContentPreview() {
       onRevert={handleRevert}
       publishing={publishing}
       hasDraft={hasDraft}
+      canPublish={canPublish(role)}
     >
       {VisualComponent ? (
         <LanguageProvider>

@@ -4,6 +4,7 @@ import { listStaff, addStaff, updateStaffRole, removeStaff } from './staffApi';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
+import { can } from '../permissions';
 
 const ROLES = ['owner', 'manager', 'editor', 'staff'];
 
@@ -17,7 +18,8 @@ function generatePassword() {
 }
 
 export default function StaffPage() {
-  const { user, staff: currentStaff } = useAdminAuth();
+  const { user, staff: currentStaff, role } = useAdminAuth();
+  const canManage = can(role, 'staff', 'edit');
   const { showToast } = useToast();
   const confirm = useConfirm();
   const [staff, setStaff] = useState(null);
@@ -61,8 +63,9 @@ export default function StaffPage() {
   async function handleRoleChange(member, role) {
     setBusyId(member.id);
     try {
+      const previousRole = member.role;
       await updateStaffRole(member.id, role);
-      logActivity(currentStaff, { action: 'update', entity: 'staff', entityId: member.id, detail: `${member.name} → ${role}` });
+      logActivity(currentStaff, { action: 'permission_change', entity: 'staff', entityId: member.id, detail: `${member.name} → ${role}`, oldValue: previousRole, newValue: role });
       showToast({ type: 'success', title: 'Role updated', message: `${member.name} is now ${role}.` });
       await load();
     } catch (err) {
@@ -102,6 +105,11 @@ export default function StaffPage() {
 
       {error && <p className="admin-auth-error">{error}</p>}
 
+      {!canManage && (
+        <p className="admin-placeholder-note">You can view the team roster. Only an Owner can add, change roles, or remove staff.</p>
+      )}
+
+      {canManage && (
       <section className="admin-form">
         <h2 className="admin-content-card-header">Add Staff Member</h2>
         <p className="admin-placeholder-note">
@@ -163,6 +171,7 @@ export default function StaffPage() {
           </div>
         </form>
       </section>
+      )}
 
       {staff === null && !error && <p>Loading…</p>}
 
@@ -176,24 +185,30 @@ export default function StaffPage() {
                 <h3>{member.name}{isSelf && ' (you)'}</h3>
                 <p className="admin-staff-uid">{member.id}</p>
               </div>
-              <select
-                className="admin-sort-select"
-                aria-label={`Change role for ${member.name}`}
-                value={member.role}
-                onChange={(e) => handleRoleChange(member, e.target.value)}
-                disabled={busy || isSelf}
-              >
-                {ROLES.map((r) => <option key={r} value={r}>{r[0].toUpperCase() + r.slice(1)}</option>)}
-              </select>
-              <div className="admin-room-row-actions">
-                <button
-                  className="admin-btn-ghost admin-btn-ghost--danger"
-                  onClick={() => handleRemove(member)}
-                  disabled={isSelf || busy}
+              {canManage ? (
+                <select
+                  className="admin-sort-select"
+                  aria-label={`Change role for ${member.name}`}
+                  value={member.role}
+                  onChange={(e) => handleRoleChange(member, e.target.value)}
+                  disabled={busy || isSelf}
                 >
-                  {busy ? 'Removing…' : 'Remove'}
-                </button>
-              </div>
+                  {ROLES.map((r) => <option key={r} value={r}>{r[0].toUpperCase() + r.slice(1)}</option>)}
+                </select>
+              ) : (
+                <span className="admin-badge">{member.role}</span>
+              )}
+              {canManage && (
+                <div className="admin-room-row-actions">
+                  <button
+                    className="admin-btn-ghost admin-btn-ghost--danger"
+                    onClick={() => handleRemove(member)}
+                    disabled={isSelf || busy}
+                  >
+                    {busy ? 'Removing…' : 'Remove'}
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}

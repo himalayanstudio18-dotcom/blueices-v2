@@ -10,7 +10,7 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
-import { can } from '../permissions';
+import { can, canPublish } from '../permissions';
 
 const emptyForm = {
   name_en: '', name_bn: '', slug: '', room_type: '',
@@ -54,10 +54,10 @@ export default function RoomEditor() {
   const confirm = useConfirm();
   const canEdit = can(role, 'rooms', 'edit');
   const canCreate = can(role, 'rooms', 'create');
-  const canChangePrice = can(role, 'rooms', 'changePrice');
-  const canChangeAvailability = can(role, 'rooms', 'changeAvailability');
-  const canPublish = can(role, 'rooms', 'publish');
-  const canManageImages = can(role, 'rooms', 'manageImages');
+  const canChangePrice = canEdit;
+  const canChangeAvailability = canEdit;
+  const canPublishRoom = canPublish(role);
+  const canManageImages = canEdit;
   const allowed = isNew ? canCreate : canEdit;
 
   const [form, setForm] = useState(emptyForm);
@@ -155,8 +155,17 @@ export default function RoomEditor() {
            instant Save is clicked, even for an already-published
            room. Everything goes into draft_data; Publish (from the
            Preview screen) is the only thing that copies it live. */
+        const previousPrice = JSON.parse(baselineRef.current || '{}').form?.price;
+        const priceChanged = String(previousPrice ?? '') !== String(form.price ?? '');
         await saveRoomDraft(id, payload);
-        logActivity(staff, { action: 'update', entity: 'room', entityId: id, detail: `${payload.name_en} — draft saved` });
+        logActivity(staff, {
+          action: 'update',
+          entity: 'room',
+          entityId: id,
+          detail: `${payload.name_en} — draft saved`,
+          oldValue: priceChanged && previousPrice !== '' ? `₹${previousPrice}` : undefined,
+          newValue: priceChanged ? `₹${form.price}` : undefined,
+        });
         setHasDraft(true);
         baselineRef.current = JSON.stringify({ form, checkedAmenities });
         showToast({ type: 'success', title: 'Draft saved', message: 'Preview your changes before publishing them.' });
@@ -388,7 +397,7 @@ export default function RoomEditor() {
           </label>
           <div className="admin-field-group">
             <label className="admin-field admin-field--checkbox">
-              <input type="checkbox" checked={form.is_published} onChange={(e) => set('is_published', e.target.checked)} disabled={!canPublish} />
+              <input type="checkbox" checked={form.is_published} onChange={(e) => set('is_published', e.target.checked)} disabled={!canPublishRoom} />
               <span>Published (visible on the live site)</span>
             </label>
             <label className="admin-field admin-field--checkbox">

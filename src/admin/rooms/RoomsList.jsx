@@ -5,7 +5,7 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
-import { can } from '../permissions';
+import { can, canPublish } from '../permissions';
 
 function formatUpdated(d) {
   if (!d) return '—';
@@ -17,8 +17,8 @@ export default function RoomsList() {
   const canCreate = can(role, 'rooms', 'create');
   const canEdit = can(role, 'rooms', 'edit');
   const canDelete = can(role, 'rooms', 'delete');
-  const canPublish = can(role, 'rooms', 'publish');
-  const canChangeAvailability = can(role, 'rooms', 'changeAvailability');
+  const canChangeAvailability = canEdit;
+  const canPublishRoom = canPublish(role);
   const canReorder = can(role, 'rooms', 'reorder');
   const { showToast } = useToast();
   const confirm = useConfirm();
@@ -45,7 +45,7 @@ export default function RoomsList() {
     const nextPublished = !room.is_published;
     try {
       await updateRoom(room.id, { is_published: nextPublished });
-      logActivity(staff, { action: nextPublished ? 'publish' : 'unpublish', entity: 'room', entityId: room.id, detail: room.name_en });
+      logActivity(staff, { action: nextPublished ? 'publish' : 'unpublish', entity: 'room', entityId: room.id, detail: room.name_en, oldValue: room.is_published, newValue: nextPublished });
       showToast({
         type: 'success',
         title: nextPublished ? 'Room published' : 'Room unpublished',
@@ -64,6 +64,7 @@ export default function RoomsList() {
     const nextAvailable = !room.is_available;
     try {
       await updateRoom(room.id, { is_available: nextAvailable });
+      logActivity(staff, { action: 'update', entity: 'room', entityId: room.id, detail: `${room.name_en} availability`, oldValue: room.is_available, newValue: nextAvailable });
       showToast({
         type: 'success',
         title: 'Availability changed',
@@ -252,7 +253,7 @@ export default function RoomsList() {
                     {room.is_available ? 'Mark Unavailable' : 'Mark Available'}
                   </button>
                 )}
-                {canPublish && (
+                {canPublishRoom && (
                   <button className="admin-btn-ghost admin-btn-ghost--dark" onClick={() => togglePublished(room)} disabled={busy}>
                     {room.is_published ? 'Unpublish' : 'Publish'}
                   </button>

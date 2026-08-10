@@ -8,11 +8,12 @@ import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast } from '../ui/AdminUIProvider';
 import PreviewShell from '../ui/PreviewShell';
+import { canPublish } from '../permissions';
 
 export default function RoomPreview() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { staff } = useAdminAuth();
+  const { staff, role } = useAdminAuth();
   const { showToast } = useToast();
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
@@ -81,6 +82,7 @@ export default function RoomPreview() {
       onRevert={handleRevert}
       publishing={publishing}
       hasDraft={hasDraft}
+      canPublish={canPublish(role)}
     >
       <div className="admin-preview-toolbar">
         <p className="admin-preview-note">

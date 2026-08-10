@@ -6,14 +6,14 @@ import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
-import { canEditContentPage } from '../permissions';
+import { can, canPublish } from '../permissions';
 
 export default function SiteContentPage() {
   const { staff, role } = useAdminAuth();
   const { showToast } = useToast();
   const confirm = useConfirm();
   const [page, setPage] = useState('home');
-  const canEditPage = canEditContentPage(role, page);
+  const canEditPage = can(role, 'content', 'edit');
   const [content, setContent] = useState(null);
   const [error, setError] = useState('');
   const [savedKey, setSavedKey] = useState(null);
@@ -31,10 +31,16 @@ export default function SiteContentPage() {
 
   useEffect(() => { load(); }, [page]);
 
-  async function save(sectionKey, fields) {
+  async function save(sectionKey, fields, previousValue) {
     try {
       await saveDraftContent(page, sectionKey, fields);
-      logActivity(staff, { action: 'update', entity: 'site_content', detail: `${page} → ${sectionKey} (draft)` });
+      logActivity(staff, {
+        action: 'update',
+        entity: 'site_content',
+        detail: `${page} → ${sectionKey} (draft)`,
+        oldValue: previousValue,
+        newValue: fields.value_en ?? fields.value_bn,
+      });
       setContent((c) => ({ ...c, [sectionKey]: { section_key: sectionKey, ...c?.[sectionKey], draft_value_en: fields.value_en, draft_value_bn: fields.value_bn } }));
       setSavedKey(sectionKey);
       setTimeout(() => setSavedKey((k) => (k === sectionKey ? null : k)), 1800);
@@ -94,9 +100,13 @@ export default function SiteContentPage() {
           {hasDraft && (
             <>
               <button type="button" className="admin-btn-ghost admin-btn-ghost--danger" onClick={handleDiscardAll}>Discard Draft</button>
-              <button type="button" className="admin-btn-primary" onClick={handlePublishAll} disabled={publishing}>
-                {publishing ? 'Publishing…' : 'Publish Changes'}
-              </button>
+              {canPublish(role) ? (
+                <button type="button" className="admin-btn-primary" onClick={handlePublishAll} disabled={publishing}>
+                  {publishing ? 'Publishing…' : 'Publish Changes'}
+                </button>
+              ) : (
+                <span className="admin-placeholder-note">Ask an Owner or Manager to publish this draft.</span>
+              )}
             </>
           )}
         </div>
@@ -147,7 +157,7 @@ export default function SiteContentPage() {
                     defaultValue={shownEn}
                     key={`${s.key}-en-${shownEn}`}
                     disabled={!canEditPage}
-                    onBlur={(e) => e.target.value !== shownEn && save(s.key, { value_en: e.target.value, value_bn: shownBn || null })}
+                    onBlur={(e) => e.target.value !== shownEn && save(s.key, { value_en: e.target.value, value_bn: shownBn || null }, shownEn)}
                   />
                 </label>
                 {s.bilingual && (
@@ -158,7 +168,7 @@ export default function SiteContentPage() {
                       defaultValue={shownBn}
                       key={`${s.key}-bn-${shownBn}`}
                       disabled={!canEditPage}
-                      onBlur={(e) => e.target.value !== shownBn && save(s.key, { value_en: shownEn || null, value_bn: e.target.value })}
+                      onBlur={(e) => e.target.value !== shownBn && save(s.key, { value_en: shownEn || null, value_bn: e.target.value }, shownBn)}
                     />
                   </label>
                 )}

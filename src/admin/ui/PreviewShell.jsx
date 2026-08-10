@@ -3,7 +3,7 @@ import React from 'react';
 /* Shared chrome for every Draft Preview screen (Rooms, Site Content,
    ...) — the PREVIEW MODE banner + Back/Publish actions are always
    the same, only what's rendered underneath differs per entity. */
-export default function PreviewShell({ onBack, onPublish, onRevert, publishing, hasDraft, children }) {
+export default function PreviewShell({ onBack, onPublish, onRevert, publishing, hasDraft, canPublish = true, children }) {
   return (
     <div className="admin-preview-shell">
       <div className="admin-preview-banner">
@@ -23,14 +23,18 @@ export default function PreviewShell({ onBack, onPublish, onRevert, publishing, 
               Discard Draft
             </button>
           )}
-          <button
-            type="button"
-            className="admin-btn-primary"
-            onClick={onPublish}
-            disabled={!hasDraft || publishing}
-          >
-            {publishing ? 'Publishing…' : 'Publish Changes'}
-          </button>
+          {canPublish ? (
+            <button
+              type="button"
+              className="admin-btn-primary"
+              onClick={onPublish}
+              disabled={!hasDraft || publishing}
+            >
+              {publishing ? 'Publishing…' : 'Publish Changes'}
+            </button>
+          ) : hasDraft && (
+            <span className="admin-placeholder-note">Ask an Owner or Manager to publish this draft.</span>
+          )}
         </div>
       </div>
       <div className="admin-preview-content">
