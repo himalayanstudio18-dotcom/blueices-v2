@@ -3,23 +3,60 @@ import { Link } from 'react-router-dom';
 import { HeartIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
+import { brandLogo } from '../assets/photos';
+import { useSettings } from '../lib/useSettings';
+import { normalizeWhatsAppNumber, toIndianTelHref } from '../lib/phone';
+
+/* Fallback only — used while settings are loading or if the admin
+   hasn't set inquiry_numbers yet. Once settings.inquiry_numbers is
+   populated (Admin > Settings > Property), that list drives this
+   block instead. */
+const DEFAULT_INQUIRY_NUMBERS = ['9804974595', '7602661373', '7063122577'];
 
 export default function Footer() {
   const { lang } = useLanguage();
   const tx = t[lang].footer;
+  const settings = useSettings();
+
+  const facebookUrl = settings?.facebook_url || 'https://facebook.com/blueice.munsong';
+  const instagramUrl = settings?.instagram_url || 'https://instagram.com/blueice.munsong';
+  const whatsappNumber = settings?.whatsapp || '919804974595';
+  const email = settings?.email || 'blueicemunsong@gmail.com';
+  const address = settings?.address || null;
+  const inquiryNumbers = (
+    Array.isArray(settings?.inquiry_numbers) && settings.inquiry_numbers.length
+      ? settings.inquiry_numbers
+      : DEFAULT_INQUIRY_NUMBERS
+  ).filter((n) => n && String(n).trim());
 
   return (
     <footer className="footer" aria-label="Site footer">
       <div className="footer-inner">
         <div className="footer-brand">
+          {/* Same crest + mark + subtitle treatment as .nav-logo,
+              scaled up for the footer's larger column. */}
           <div className="footer-logo">
-            <span className="fl-blue">Blue</span><span className="fl-gold">Ice</span>
+            <img src={brandLogo} alt="" aria-hidden="true" className="footer-logo-crest" />
+            <span className="footer-logo-text">
+              <span className="footer-logo-mark">Blue<span>Ice</span></span>
+              <span className="footer-logo-sub">Lakhey Lachen &middot; Munsong</span>
+            </span>
           </div>
-          <p className="footer-name">Lakhey Lachen Homestay</p>
           <p className="footer-tagline">{tx.tagline}</p>
           <div className="footer-socials">
             <a
-              href="https://instagram.com/blueice.munsong"
+              href={facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-social"
+              aria-label="Facebook"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </a>
+            <a
+              href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-social"
@@ -30,7 +67,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://wa.me/919800000000"
+              href={`https://wa.me/${normalizeWhatsAppNumber(whatsappNumber)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-social"
@@ -58,10 +95,27 @@ export default function Footer() {
           <h4 className="footer-col-heading">{tx.colContact}</h4>
           <ul>
             <li><Link to="/contact" className="footer-link">{tx.linkWhatsApp}</Link></li>
-            <li><a href="mailto:blueicemunsong@gmail.com" className="footer-link">blueicemunsong@gmail.com</a></li>
-            <li><span className="footer-plain">Lower Burmaik, Munsong</span></li>
-            <li><span className="footer-plain">Kalimpong, West Bengal</span></li>
+            <li><a href={`mailto:${email}`} className="footer-link">{email}</a></li>
+            {address ? (
+              <li><span className="footer-plain">{address}</span></li>
+            ) : (
+              <>
+                <li><span className="footer-plain">Lower Burmaik, Munsong</span></li>
+                <li><span className="footer-plain">Kalimpong, West Bengal</span></li>
+              </>
+            )}
           </ul>
+
+          {inquiryNumbers.length > 0 && (
+            <>
+              <p className="footer-inquiry-label">{tx.inquiryLabel}</p>
+              <ul className="footer-inquiry-list">
+                {inquiryNumbers.map((n) => (
+                  <li key={n}><a href={toIndianTelHref(n)} className="footer-link">{n}</a></li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </div>
 

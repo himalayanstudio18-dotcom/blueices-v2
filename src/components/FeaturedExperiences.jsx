@@ -14,11 +14,13 @@ const expIcons = [
   <WaterIcon size={24} color="var(--amber-light)" />,
 ];
 
+/* .webp siblings — same resolution, same look, 3.6 MB -> 0.8 MB
+   across these four. See the note in HomeTeasers.jsx. */
 const expImages = [
-  'images/experience_sunrise_tea.png',
-  'images/experience_bonfire.png',
-  'images/experience_tea_garden.png',
-  'images/experience_waterfall.png',
+  'images/experience_sunrise_tea.webp',
+  'images/experience_bonfire.webp',
+  'images/experience_tea_garden.webp',
+  'images/experience_waterfall.webp',
 ];
 
 const actIcons = [
@@ -56,10 +58,8 @@ export default function FeaturedExperiences() {
                 <span className="mc-tag">{m.tag}</span>
               </div>
               <div className="mc-body">
-                <div className="mc-icon-num">
-                  <span className="mc-icon">{expIcons[i]}</span>
-                  <span className="mc-num">{m.num}</span>
-                </div>
+                <span className="mc-num" aria-hidden="true">{m.num}</span>
+                <span className="mc-icon">{expIcons[i]}</span>
                 <h3 className="mc-title">{m.title}</h3>
                 <p className="mc-desc">{m.desc}</p>
               </div>

@@ -1,14 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { KitchenIcon, ElevationIcon, FireIcon, WifiIcon, CarIcon, TeaIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
-
-const roomMeta = [
-  { id: '01', price: '\u20B93,800', tagClass: 'tag-gold', img: 'images/stay_room_suite.png' },
-  { id: '02', price: '\u20B94,500', tagClass: 'tag-signature', img: 'images/room_cozy_warm.png' },
-  { id: '03', price: '\u20B93,200', tagClass: 'tag-forest', img: 'images/village_valley_view.png' },
-];
+import { usePublishedRooms } from '../lib/usePublishedRooms';
+import RoomDetailsModal from './RoomDetailsModal';
 
 const amenityIcons = [
   <KitchenIcon size={20} color="var(--amber-light)" />,
@@ -22,6 +18,15 @@ const amenityIcons = [
 export default function FeaturedStay() {
   const { lang } = useLanguage();
   const tx = t[lang].featuredStay;
+  const [openRoom, setOpenRoom] = useState(null);
+  const { rooms, loading, error } = usePublishedRooms(lang);
+
+  const handleCardKeyDown = (e, i) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setOpenRoom(i);
+    }
+  };
 
   return (
     <section id="stays" className="stays-section" aria-label="Stay Collection">
@@ -37,30 +42,44 @@ export default function FeaturedStay() {
 
         {/* Room Cards */}
         <div className="stays-grid" data-reveal="fade-up">
-          {tx.rooms.map((room, i) => (
-            <article key={roomMeta[i].id} className="room-card">
+          {loading && <p className="section-sub">Loading rooms…</p>}
+          {error && <p className="section-sub">Rooms are temporarily unavailable — please check back shortly.</p>}
+          {!loading && !error && rooms.length === 0 && (
+            <p className="section-sub">No rooms published yet.</p>
+          )}
+          {rooms?.map((room, i) => (
+            <article
+              key={room.id}
+              className="room-card"
+              role="button"
+              tabIndex={0}
+              aria-label={`View details for ${room.name}`}
+              onClick={() => setOpenRoom(i)}
+              onKeyDown={(e) => handleCardKeyDown(e, i)}
+            >
               <div className="rc-img-wrap">
-                <img src={roomMeta[i].img} alt={room.name} className="rc-img" loading="lazy" />
+                <img src={room.img} alt={room.name} className="rc-img" loading="lazy" />
                 <div className="rc-img-overlay"></div>
-                <span className={`rc-tag ${roomMeta[i].tagClass}`}>{room.tag}</span>
-                <span className="rc-price">{roomMeta[i].price}<small>/night</small></span>
+                <span className={`rc-tag ${room.tagClass}`}>{room.tag}</span>
               </div>
               <div className="rc-body">
-                <div className="rc-meta">
-                  <span className="rc-num">{roomMeta[i].id}</span>
-                  <div className="rc-specs">
-                    <span>{room.capacity}</span>
-                    <span>{room.size}</span>
-                  </div>
-                </div>
+                <span className="rc-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="rc-name">{room.name}</h3>
-                <p className="rc-desc">{room.desc}</p>
-                <div className="rc-features">
-                  {room.features.map((f, fi) => (
-                    <span key={fi} className="rc-feature">&check; {f}</span>
-                  ))}
+                <div className="rc-meta">
+                  <span>{room.capacity}</span>
+                  <span className="rc-meta-sep" aria-hidden="true"></span>
+                  <span>{room.size}</span>
                 </div>
-                <Link to="/contact" className="btn-warm rc-btn">{tx.ctaCard}</Link>
+                <p className="rc-desc">{room.shortDesc}</p>
+                {room.isAvailable ? (
+                  <Link to="/contact" className="btn-warm rc-btn" onClick={(e) => e.stopPropagation()}>
+                    {tx.ctaCard}
+                  </Link>
+                ) : (
+                  <span className="btn-warm rc-btn rc-btn--disabled" aria-disabled="true" onClick={(e) => e.stopPropagation()}>
+                    Currently Unavailable
+                  </span>
+                )}
               </div>
             </article>
           ))}
@@ -83,6 +102,15 @@ export default function FeaturedStay() {
           <Link to="/contact" className="btn-outline-warm">{tx.ctaBottom}</Link>
         </div>
       </div>
+
+      {openRoom !== null && rooms?.[openRoom] && (
+        <RoomDetailsModal
+          key={rooms[openRoom].id}
+          room={rooms[openRoom]}
+          ctaLabel={tx.ctaCard}
+          onClose={() => setOpenRoom(null)}
+        />
+      )}
     </section>
   );
 }

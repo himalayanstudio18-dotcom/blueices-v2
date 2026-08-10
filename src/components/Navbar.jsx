@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
+import { brandLogo } from '../assets/photos';
 
 export default function Navbar({ onOpenMobile }) {
   const { lang, setLang } = useLanguage();
@@ -13,8 +14,11 @@ export default function Navbar({ onOpenMobile }) {
     <nav id="navbar" role="navigation" aria-label="Main navigation">
       <div className="nav-inner">
         <Link to="/" className="nav-logo" aria-label="Blue Ice Homestay — Home">
-          <span className="nav-logo-mark">Blue<span>Ice</span></span>
-          <span className="nav-logo-sub">Lakhey Lachen &middot; Munsong</span>
+          <img src={brandLogo} alt="" aria-hidden="true" className="nav-logo-crest" />
+          <span className="nav-logo-text">
+            <span className="nav-logo-mark">Blue<span>Ice</span></span>
+            <span className="nav-logo-sub">Lakhey Lachen &middot; Munsong</span>
+          </span>
         </Link>
 
         {/* Desktop links */}

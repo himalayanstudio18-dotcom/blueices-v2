@@ -2,6 +2,7 @@ import React from 'react';
 import { HomeIcon, CloudIcon, MapIcon, StarIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
+import { whyPhotos } from '../assets/photos';
 
 const icons = [
   <HomeIcon size={26} color="var(--amber-light)" />,
@@ -9,11 +10,7 @@ const icons = [
   <MapIcon size={26} color="var(--amber-light)" />,
 ];
 
-const images = [
-  'images/guest_hospitality_meal.png',
-  'images/hero_himalayan_sunrise.png',
-  'images/story_mountain_path.png',
-];
+const images = whyPhotos;
 
 export default function WhyBlueIce() {
   const { lang } = useLanguage();

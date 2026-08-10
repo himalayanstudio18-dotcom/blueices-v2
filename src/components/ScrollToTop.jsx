@@ -21,7 +21,7 @@ export default function ScrollToTop({ onCloseMobile }) {
         el.style.transform = 'none';
 
         const children = el.querySelectorAll(
-          '.moment-card, .room-card, .why-card, .act-chip, .gallery-item, .amenity-pill, .contact-card, .het-card, .hst-card'
+          '.moment-card, .room-card, .why-card, .act-chip, .fan-card, .amenity-pill, .contact-card, .het-card, .hst-card'
         );
         children.forEach((child) => {
           child.style.opacity = '1';

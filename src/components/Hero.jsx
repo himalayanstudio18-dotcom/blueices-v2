@@ -3,14 +3,34 @@ import { Link } from 'react-router-dom';
 import { StarIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
+import { useSiteContent } from '../lib/useSiteContent';
+import { useSettings } from '../lib/useSettings';
+import { normalizeWhatsAppNumber } from '../lib/phone';
 
 export default function Hero() {
   const { lang } = useLanguage();
   const tx = t[lang].hero;
+  const contact = t[lang].contactPage;
+  const finalCta = t[lang].finalCta;
+  const { get } = useSiteContent('home', lang);
+  const settings = useSettings();
+  const whatsappNumber = normalizeWhatsAppNumber(settings?.whatsapp || '919804974595');
+  const phone = settings?.phone || '+919804974595';
+
+  const heroImage = get('hero_image', '/images/hero_himalayan_sunrise.webp');
+  const heroHeading = get('hero_heading', null);
+  const heroSub = get('hero_subtitle', tx.sub);
+  const ctaText = get('hero_cta_text', tx.cta1);
+  const ctaLink = get('hero_cta_link', null);
 
   return (
     <section id="hero" className="hero" aria-label="Lakhey Lachen Homestay">
-      <div className="hero-bg" style={{ backgroundImage: "url('images/hero_himalayan_sunrise.png')" }}></div>
+      {/* Same photo the desktop hero uses (previously only applied
+          there via a CSS !important override beating this inline
+          style) — mobile/tablet now render identical imagery. */}
+      <div className="hero-bg" style={{ backgroundImage: `url('${heroImage}')` }}></div>
+      {/* Tonal grade: unifies daylight photography with the dark amber palette */}
+      <div className="hero-grade" aria-hidden="true"></div>
       <div className="hero-overlay"></div>
       <div className="hero-sun-glow" aria-hidden="true"></div>
       <div className="hero-mist hero-mist-1" aria-hidden="true"></div>
@@ -18,13 +38,21 @@ export default function Hero() {
 
       <div className="hero-content">
         <p className="hero-location">{tx.location}</p>
-        <h1 className="hero-headline">
-          {tx.line1}<br/>
-          <em>{tx.line2}</em>
-        </h1>
-        <p className="hero-sub">{tx.sub}</p>
+        {heroHeading ? (
+          <h1 className="hero-headline">{heroHeading}</h1>
+        ) : (
+          <h1 className="hero-headline">
+            {tx.line1}<br/>
+            <em>{tx.line2}</em>
+          </h1>
+        )}
+        <p className="hero-sub">{heroSub}</p>
         <div className="hero-actions">
-          <Link to="/contact" className="btn-warm" id="btn-plan">{tx.cta1}</Link>
+          {ctaLink ? (
+            <a href={ctaLink} className="btn-warm" id="btn-plan">{ctaText}</a>
+          ) : (
+            <Link to="/contact" className="btn-warm" id="btn-plan">{ctaText}</Link>
+          )}
           <Link to="/story" className="btn-outline-warm">{tx.cta2}</Link>
         </div>
         <div className="hero-trust">
@@ -46,6 +74,45 @@ export default function Hero() {
       <div className="hero-scroll-hint" aria-hidden="true">
         <div className="scroll-dot"></div>
         <span>Scroll</span>
+      </div>
+
+      {/* Desktop-only editorial rail — display:none until 1025px,
+          so mobile DOM renders exactly as before. aria-hidden keeps
+          it out of the a11y tree since it duplicates hero-trust. */}
+      <div className="hero-rail" aria-hidden="true">
+        <span className="hero-rail-line"></span>
+        <span className="hero-rail-text">{tx.trust2}</span>
+      </div>
+
+      {/* Desktop-only floating reservation panel — display:none until
+          1025px. The reference's booking widget, reimagined honestly
+          for a single homestay: real contact channels (WhatsApp,
+          phone) instead of a destination-search form with nowhere
+          real to send a query. Every string below is reused from
+          existing translations — nothing here is new copy. */}
+      <div className="hero-reserve-card">
+        <span className="hrc-badge">{finalCta.trust1}</span>
+        <h2 className="hrc-title">{tx.cta1}</h2>
+        <span className="hrc-rating"><StarIcon size={13} color="var(--amber-light)" /> {tx.trust1}</span>
+
+        <div className="hrc-tags">
+          <span className="hrc-tag">{tx.trust3}</span>
+          <span className="hrc-tag">{tx.trust2}</span>
+        </div>
+
+        <a
+          href={`https://wa.me/${whatsappNumber}?text=Hello!%20I%20would%20like%20to%20check%20availability%20at%20Lakhey%20Lachen%20Homestay.`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hrc-cta hrc-cta-primary"
+        >
+          {contact.card1cta}
+        </a>
+        <a href={`tel:${phone}`} className="hrc-cta hrc-cta-secondary">
+          {contact.card2cta}
+        </a>
+
+        <span className="hrc-foot">{finalCta.trust3}</span>
       </div>
     </section>
   );

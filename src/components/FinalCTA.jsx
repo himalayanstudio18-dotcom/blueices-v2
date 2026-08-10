@@ -2,14 +2,23 @@ import React from 'react';
 import { StarIcon, ZapIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
+import { useSettings } from '../lib/useSettings';
+import { normalizeWhatsAppNumber } from '../lib/phone';
 
 export default function FinalCTA() {
   const { lang } = useLanguage();
   const tx = t[lang].finalCta;
+  const settings = useSettings();
+  const whatsappNumber = normalizeWhatsAppNumber(settings?.whatsapp || '919804974595');
+  const phone = settings?.phone || '+919804974595';
 
   return (
     <section id="cta" className="cta-section" aria-label="Book Your Stay">
-      <div className="cta-bg" style={{ backgroundImage: "url('images/hero_himalayan_sunrise.png')" }}></div>
+      {/* Same stargazing plate the desktop CTA uses (previously only
+          applied there via a CSS !important override beating this
+          inline style) — mobile/tablet now render identical imagery. */}
+      <div className="cta-bg" style={{ backgroundImage: "url('/images/timeline_stargazing.webp')" }}></div>
+      <div className="cta-grade" aria-hidden="true"></div>
       <div className="cta-overlay"></div>
 
       <div className="cta-inner" data-reveal="fade-up">
@@ -22,7 +31,7 @@ export default function FinalCTA() {
 
         <div className="cta-actions">
           <a
-            href="https://wa.me/919800000000?text=Hello!%20I%20would%20like%20to%20reserve%20a%20stay%20at%20Lakhey%20Lachen%20Homestay."
+            href={`https://wa.me/${whatsappNumber}?text=Hello!%20I%20would%20like%20to%20reserve%20a%20stay%20at%20Lakhey%20Lachen%20Homestay.`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-whatsapp-big"
@@ -32,7 +41,7 @@ export default function FinalCTA() {
           </a>
 
           <div className="cta-alt-actions">
-            <a href="tel:+919800000000" className="btn-outline-warm">
+            <a href={`tel:${phone}`} className="btn-outline-warm">
               {tx.cta2}
             </a>
           </div>

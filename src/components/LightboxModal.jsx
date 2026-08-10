@@ -1,13 +1,23 @@
 import React from 'react';
+import { signaturePhotos } from '../assets/photos';
 
-const lightboxPhotos = [
-  { src: 'images/hero_himalayan_sunrise.png', caption: 'No alarm clock needed here.' },
-  { src: 'images/experience_tea_garden.png', caption: 'Tea gardens at first fog.' },
-  { src: 'images/experience_bonfire.png', caption: 'Evenings that never really end.' },
-  { src: 'images/experience_waterfall.png', caption: 'Where the mountain exhales.' },
-  { src: 'images/story_mountain_path.png', caption: 'Every trail leads somewhere worth finding.' },
-  { src: 'images/guest_hospitality_meal.png', caption: 'Cooked with love, every time.' },
+/* Captions are index-aligned with signaturePhotos — the gallery
+   passes its own index straight through, so both arrays must
+   stay in the same order or the wrong photo opens. */
+const captions = [
+  'No alarm clock needed here.',
+  'Where mornings are taken slowly.',
+  'The house, and the quiet around it.',
+  'Small corners worth sitting in.',
+  'Every trail leads somewhere worth finding.',
+  'Nothing here is in a hurry.',
 ];
+
+const lightboxPhotos = signaturePhotos.map((p, i) => ({
+  src: p.src,
+  alt: p.alt,
+  caption: captions[i] ?? p.alt,
+}));
 
 export default function LightboxModal({ activeIndex, onClose, onPrev, onNext }) {
   if (activeIndex === null) return null;
