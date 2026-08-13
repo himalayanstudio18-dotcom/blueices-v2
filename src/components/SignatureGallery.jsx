@@ -143,7 +143,20 @@ export default function SignatureGallery({ onOpenLightbox }) {
   const directionRef = useRef('right');
   const prevVisibleRef = useRef(new Set());
 
-  const visibleMap = computeVisibleMap(centerIndex, visibleCount, total);
+  /* `total` can shrink between renders — e.g. the static 14-photo
+     fallback swapping for a smaller set of admin-published DB photos
+     — faster than the re-clamp effect above can react, since an
+     effect only fires *after* commit. The render that first receives
+     the smaller `cards` array can still be carrying the previous,
+     now out-of-range `centerIndex` (this is what crashed `/story`
+     down to a blank page: `cards[centerIndex]` was `undefined`).
+     Every render-time read of centerIndex into `cards` goes through
+     this clamped value instead, so a render can never index out of
+     bounds; `centerIndex` state itself (and the effect above) stays
+     the source of truth for navigation. */
+  const safeCenterIndex = total ? Math.min(centerIndex, total - 1) : 0;
+
+  const visibleMap = computeVisibleMap(safeCenterIndex, visibleCount, total);
 
   const goTo = useCallback((index) => {
     setCenterIndex((prev) => {
@@ -177,7 +190,7 @@ export default function SignatureGallery({ onOpenLightbox }) {
     const { w: cardW, h: cardH } = cardSizeForWidth(window.innerWidth);
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isFirstMount = !hasEntered.current;
-    const map = computeVisibleMap(centerIndex, visibleCount, total);
+    const map = computeVisibleMap(safeCenterIndex, visibleCount, total);
     const prevVisible = prevVisibleRef.current;
     const direction = directionRef.current;
     const viewportW = window.innerWidth;
@@ -268,7 +281,7 @@ export default function SignatureGallery({ onOpenLightbox }) {
 
     const apply = () => {
       const { w: cardW, h: cardH } = cardSizeForWidth(window.innerWidth);
-      const map = computeVisibleMap(centerIndex, visibleCount, total);
+      const map = computeVisibleMap(safeCenterIndex, visibleCount, total);
       Array.from(container.querySelectorAll('.fan-card')).forEach((card, i) => {
         const d = map.get(i);
         if (d === undefined) return;
@@ -379,10 +392,10 @@ export default function SignatureGallery({ onOpenLightbox }) {
                 <button
                   key={i}
                   type="button"
-                  className={`fan-dot${i === centerIndex ? ' is-active' : ''}`}
+                  className={`fan-dot${i === safeCenterIndex ? ' is-active' : ''}`}
                   onClick={() => goTo(i)}
                   aria-label={`Go to photo ${i + 1}`}
-                  aria-current={i === centerIndex}
+                  aria-current={i === safeCenterIndex}
                 />
               ))}
             </div>
@@ -392,8 +405,8 @@ export default function SignatureGallery({ onOpenLightbox }) {
           </div>
 
           <p className="fan-caption">
-            <span className="fan-caption-num">{String(centerIndex + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
-            <span key={centerIndex} className="fan-caption-text">{cards[centerIndex].caption}</span>
+            <span className="fan-caption-num">{String(safeCenterIndex + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
+            <span key={safeCenterIndex} className="fan-caption-text">{cards[safeCenterIndex]?.caption}</span>
           </p>
         </div>
 
