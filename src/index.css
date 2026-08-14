@@ -4715,6 +4715,47 @@ button { border: none; background: none; font-family: inherit; }
   pointer-events: auto;
 }
 
+.footer-find-us-note {
+  margin-top: 0.6rem;
+}
+
+.footer-map-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(201,133,58,0.25);
+  background: rgba(201,133,58,0.06);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.2s;
+}
+.footer-map-cta:hover,
+.footer-map-cta:focus-visible {
+  background: rgba(201,133,58,0.2);
+  border-color: var(--amber);
+  color: var(--amber-light);
+  transform: translateY(-1px);
+}
+.footer-map-cta:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+.footer-map-cta:active {
+  transform: translateY(0);
+}
+.footer-map-cta-arrow {
+  font-size: 0.85rem;
+  transition: transform 0.2s;
+}
+.footer-map-cta:hover .footer-map-cta-arrow {
+  transform: translate(1px, -1px);
+}
+
 .footer-bottom {
   border-top: 1px solid rgba(201,133,58,0.1);
   padding: 1.5rem var(--pad-x);

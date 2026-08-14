@@ -1749,6 +1749,51 @@
   font-size: 1rem;
 }
 
+/* ─── Location & Map (Property Settings) ─────────────────────── */
+.admin-location-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.admin-location-actions .admin-btn-ghost.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.admin-location-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px dashed rgba(74, 52, 34, 0.2);
+  border-radius: 0.65rem;
+  background: rgba(74, 52, 34, 0.03);
+}
+
+.admin-location-preview-map {
+  width: 100%;
+  max-width: 380px;
+  height: 200px;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 1px solid rgba(74, 52, 34, 0.15);
+}
+
+.admin-location-preview-map iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.admin-location-preview-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
 /* ─── Owner profile ───────────────────────────────────────── */
 .admin-profile-form {
   display: flex;

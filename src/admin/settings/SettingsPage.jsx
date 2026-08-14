@@ -10,6 +10,8 @@ import { visibleSettingsTabs } from '../permissions';
 
 const MAX_NAME_LENGTH = 80;
 
+const GOOGLE_MAPS_URL_HOSTS = ['maps.app.goo.gl', 'goo.gl', 'google.com', 'www.google.com', 'maps.google.com'];
+
 function validateField(field, value) {
   if (field === 'email') {
     if (!value) return 'Email address is required.';
@@ -19,6 +21,35 @@ function validateField(field, value) {
     if (!value) return 'WhatsApp number is required.';
     const digits = String(value).replace(/\D/g, '');
     if (digits.length < 7 || digits.length > 15) return 'Enter a valid WhatsApp number (7–15 digits).';
+  }
+  if (field === 'address') {
+    if (!value) return 'Property address is required.';
+  }
+  if (field === 'google_maps_url') {
+    if (!value) return 'Google Maps location URL is required.';
+    let url;
+    try { url = new URL(value); } catch { return 'Enter a valid URL (starting with https://).'; }
+    if (url.protocol !== 'https:') return 'Google Maps URL must use https://.';
+    if (!GOOGLE_MAPS_URL_HOSTS.includes(url.hostname)) return 'Enter a Google Maps link (e.g. maps.app.goo.gl or google.com/maps).';
+  }
+  if (field === 'google_maps_embed_url') {
+    if (!value) return 'Google Maps embed URL is required.';
+    let url;
+    try { url = new URL(value); } catch { return 'Enter a valid embed URL (starting with https://).'; }
+    if (url.protocol !== 'https:') return 'Embed URL must use https://.';
+    if (url.hostname !== 'www.google.com' || !url.pathname.startsWith('/maps/embed')) {
+      return 'Enter a Google Maps embed URL (starts with https://www.google.com/maps/embed).';
+    }
+  }
+  if (field === 'latitude') {
+    if (value !== null && value !== '' && (Number.isNaN(Number(value)) || Number(value) < -90 || Number(value) > 90)) {
+      return 'Latitude must be a number between -90 and 90.';
+    }
+  }
+  if (field === 'longitude') {
+    if (value !== null && value !== '' && (Number.isNaN(Number(value)) || Number(value) < -180 || Number(value) > 180)) {
+      return 'Longitude must be a number between -180 and 180.';
+    }
   }
   return null;
 }
@@ -40,6 +71,7 @@ export default function SettingsPage() {
   const [savedField, setSavedField] = useState(null);
   const [publishing, setPublishing] = useState(false);
   const [inquiryError, setInquiryError] = useState('');
+  const [showMapPreview, setShowMapPreview] = useState(false);
 
   async function load() {
     try {
@@ -261,12 +293,67 @@ export default function SettingsPage() {
             <TextField field="phone" label="Phone" />
             <TextField field="email" label="Email" type="email" />
             <TextField field="whatsapp" label="WhatsApp Number (digits only, with country code)" />
-            <TextField field="address" label="Address" />
-            <TextField field="google_maps_url" label="Google Maps URL" />
             <TextField field="checkin_time" label="Check-in Time" />
             <TextField field="checkout_time" label="Check-out Time" />
           </div>
           <InquiryNumbersField />
+        </div>
+      )}
+
+      {settings && tab === 'Property' && (
+        <div className="admin-content-card" style={{ marginTop: '1rem' }}>
+          <h2 className="admin-content-card-header">Location &amp; Map</h2>
+          <div className="admin-form-grid">
+            <TextField field="address" label="Property Address" />
+            <TextField field="location_label" label="Location Label (e.g. Find Us)" />
+            <TextField field="google_maps_url" label="Google Maps Location URL" />
+            <TextField field="google_maps_embed_url" label="Google Maps Embed URL" />
+            <TextField field="latitude" label="Latitude" type="number" />
+            <TextField field="longitude" label="Longitude" type="number" />
+            <TextField field="location_note" label="Directions / Location Note" />
+            <TextField field="map_cta_label_en" label="English Map CTA Label" />
+            <TextField field="map_cta_label_bn" label="Bengali Map CTA Label" />
+          </div>
+
+          <div className="admin-location-actions">
+            <a
+              href={shown('google_maps_url') || undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`admin-btn-ghost${!shown('google_maps_url') ? ' is-disabled' : ''}`}
+              onClick={(e) => { if (!shown('google_maps_url')) e.preventDefault(); }}
+              aria-disabled={!shown('google_maps_url')}
+            >
+              Test Google Maps Link
+            </a>
+            <button type="button" className="admin-btn-ghost" onClick={() => setShowMapPreview((v) => !v)}>
+              {showMapPreview ? 'Hide Preview' : 'Preview Map'}
+            </button>
+          </div>
+
+          {showMapPreview && (
+            <div className="admin-location-preview">
+              <p className="admin-content-card-header" style={{ fontSize: '0.9rem' }}>{shown('location_label') || 'Find Us'}</p>
+              <p className="admin-placeholder-note" style={{ margin: '0.25rem 0 0.75rem' }}>{shown('address') || 'No address set yet.'}</p>
+              {shown('google_maps_embed_url') ? (
+                <div className="admin-location-preview-map">
+                  <iframe
+                    src={shown('google_maps_embed_url')}
+                    title="Location preview"
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
+                </div>
+              ) : (
+                <p className="admin-placeholder-note">Set a Google Maps Embed URL to preview the map here.</p>
+              )}
+              {shown('location_note') && <p className="admin-placeholder-note" style={{ marginTop: '0.75rem' }}>{shown('location_note')}</p>}
+              <div className="admin-location-preview-cta">
+                {shown('map_cta_label_en') && <span className="admin-badge">EN: {shown('map_cta_label_en')}</span>}
+                {shown('map_cta_label_bn') && <span className="admin-badge">BN: {shown('map_cta_label_bn')}</span>}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

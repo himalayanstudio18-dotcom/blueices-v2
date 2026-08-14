@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HeartIcon } from './Icons';
+import { HeartIcon, MapIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 import { brandLogo } from '../assets/photos';
@@ -13,6 +13,12 @@ import { normalizeWhatsAppNumber, toIndianTelHref } from '../lib/phone';
    block instead. */
 const DEFAULT_INQUIRY_NUMBERS = ['9804974595', '7602661373', '7063122577'];
 
+/* Same defaults as before this block became CMS-driven — kept as
+   fallbacks so existing installs see no visible change until the
+   admin sets Location fields in Property Settings. */
+const DEFAULT_MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4405.880769181037!2d88.55515369999999!3d27.1375835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39e41f00764cf4e9%3A0x81882ff4e9c42c54!2sLakhey%20Lachen%20Homestay%20(%20By%20blue%20ice%20)!5e1!3m2!1sen!2sin!4v1786642827296!5m2!1sen!2sin';
+const DEFAULT_MAP_URL = 'https://maps.app.goo.gl/hLRna3J3rM35kYuPA?g_st=ac';
+
 export default function Footer() {
   const { lang } = useLanguage();
   const tx = t[lang].footer;
@@ -23,6 +29,11 @@ export default function Footer() {
   const whatsappNumber = settings?.whatsapp || '919804974595';
   const email = settings?.email || 'blueicemunsong@gmail.com';
   const address = settings?.address || null;
+  const mapEmbedUrl = settings?.google_maps_embed_url || DEFAULT_MAP_EMBED_URL;
+  const mapUrl = settings?.google_maps_url || DEFAULT_MAP_URL;
+  const locationLabel = settings?.location_label || tx.colFindUs;
+  const locationNote = settings?.location_note || null;
+  const mapCtaLabel = (lang === 'bn' ? settings?.map_cta_label_bn : settings?.map_cta_label_en) || tx.mapCta;
   const inquiryNumbers = (
     Array.isArray(settings?.inquiry_numbers) && settings.inquiry_numbers.length
       ? settings.inquiry_numbers
@@ -119,19 +130,30 @@ export default function Footer() {
         </div>
 
         <div className="footer-find-us">
-          <h4 className="footer-col-heading">{tx.colFindUs}</h4>
+          <h4 className="footer-col-heading">{locationLabel}</h4>
           <p className="footer-plain footer-find-us-address">
             {address || 'Lower Burmaik, Munsong, Kalimpong, West Bengal'}
           </p>
           <div className="footer-map">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4405.880769181037!2d88.55515369999999!3d27.1375835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39e41f00764cf4e9%3A0x81882ff4e9c42c54!2sLakhey%20Lachen%20Homestay%20(%20By%20blue%20ice%20)!5e1!3m2!1sen!2sin!4v1786642827296!5m2!1sen!2sin"
+              src={mapEmbedUrl}
               title="Lakhey Lachen Homestay location"
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
           </div>
+          {locationNote && <p className="footer-plain footer-find-us-note">{locationNote}</p>}
+          <a
+            href={mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-map-cta"
+          >
+            <MapIcon size={14} />
+            <span>{mapCtaLabel}</span>
+            <span aria-hidden="true" className="footer-map-cta-arrow">&#8599;</span>
+          </a>
         </div>
       </div>
 

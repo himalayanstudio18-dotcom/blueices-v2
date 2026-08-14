@@ -14,7 +14,9 @@ export function useSettings() {
       .from('settings')
       .select(`
         id, property_name, logo_url, favicon_url, phone, email, whatsapp,
-        address, google_maps_url, checkin_time, checkout_time,
+        address, google_maps_url, google_maps_embed_url, location_label,
+        latitude, longitude, location_note, map_cta_label_en, map_cta_label_bn,
+        checkin_time, checkout_time,
         booking_enabled, min_stay, max_guests, cancellation_policy,
         booking_message, instagram_url, facebook_url, youtube_url,
         google_business_url, notify_new_inquiry, notify_booking,
