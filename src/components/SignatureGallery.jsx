@@ -118,15 +118,21 @@ export default function SignatureGallery({ onOpenLightbox }) {
   const tx = t[lang].gallery;
   const { photos: dbPhotos } = useGalleryImages(lang);
 
-  /* Admin-uploaded photos (Supabase) take over once any exist; the
-     curated static set is the fallback while loading and if the
-     gallery hasn't been populated in the admin panel yet — this
-     keeps the carousel from ever rendering empty. */
+  /* Canonical gallery dataset: the curated static set plus any
+     published admin uploads, additive rather than one replacing the
+     other — losing the static set the moment a single admin photo
+     existed was the original bug here. Deduplicated by `src` in case
+     an admin upload ever points at the same file as a static photo.
+     While the admin fetch is still in flight `dbPhotos` is `null`, so
+     this safely reduces to just the static set until it resolves. */
   const staticCards = signaturePhotos.map((p, i) => ({
+    id: `static-${i}`,
     ...p,
     caption: tx.photos[i]?.caption ?? p.alt,
   }));
-  const cards = dbPhotos?.length ? dbPhotos : staticCards;
+  const staticSrcs = new Set(staticCards.map((c) => c.src));
+  const newAdminCards = (dbPhotos ?? []).filter((c) => !staticSrcs.has(c.src));
+  const cards = [...staticCards, ...newAdminCards];
   const total = cards.length;
 
   const [centerIndex, setCenterIndex] = useState(Math.floor(total / 2));
@@ -358,11 +364,11 @@ export default function SignatureGallery({ onOpenLightbox }) {
                 const tier = hidden ? 4 : Math.min(Math.abs(d), 4);
                 return (
                   <button
-                    key={i}
+                    key={card.id ?? i}
                     type="button"
                     className={`fan-card${d === 0 ? ' is-hero' : ''}`}
                     style={{ '--tier': tier }}
-                    onClick={() => onOpenLightbox(i)}
+                    onClick={() => onOpenLightbox(i, cards)}
                     aria-label={`View photo: ${card.alt}`}
                     aria-hidden={hidden}
                     tabIndex={hidden ? -1 : 0}
@@ -388,9 +394,9 @@ export default function SignatureGallery({ onOpenLightbox }) {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
             <div className="fan-dots">
-              {cards.map((_, i) => (
+              {cards.map((card, i) => (
                 <button
-                  key={i}
+                  key={card.id ?? i}
                   type="button"
                   className={`fan-dot${i === safeCenterIndex ? ' is-active' : ''}`}
                   onClick={() => goTo(i)}

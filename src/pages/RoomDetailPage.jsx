@@ -20,6 +20,19 @@ export default function RoomDetailPage() {
   const touchStartX = useRef(null);
   const gallery = room?.gallery ?? [];
 
+  /* The page component is reused (not remounted) across a `:slug`
+     change, so activeImg from the previous room can outlive its
+     gallery — reset it whenever the route lands on a different room. */
+  useEffect(() => {
+    setActiveImg(0);
+  }, [slug]);
+
+  /* Render-time safety net for the one render between a gallery
+     shrinking and the effect above committing (effects always fire a
+     render behind the state change that triggers them) — same fix as
+     SignatureGallery's safeCenterIndex. */
+  const safeActiveImg = gallery.length ? Math.min(activeImg, gallery.length - 1) : 0;
+
   const prev = useCallback(() => {
     setActiveImg((i) => (i - 1 + gallery.length) % gallery.length);
   }, [gallery.length]);
@@ -81,13 +94,13 @@ export default function RoomDetailPage() {
           <div className="room-page-frame">
             <div className="room-modal-gallery">
               <div className="rmg-main" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-                <img src={gallery[activeImg]} alt={`${room.name} — view ${activeImg + 1} of ${gallery.length}`} className="rmg-main-img" />
+                <img src={gallery[safeActiveImg]} alt={`${room.name} — view ${safeActiveImg + 1} of ${gallery.length}`} className="rmg-main-img" />
                 <div className="rmg-main-grade" aria-hidden="true"></div>
                 {gallery.length > 1 && (
                   <>
                     <button type="button" className="rmg-nav rmg-nav--prev" aria-label="Previous photo" onClick={prev}>‹</button>
                     <button type="button" className="rmg-nav rmg-nav--next" aria-label="Next photo" onClick={next}>›</button>
-                    <span className="rmg-counter">{activeImg + 1} / {gallery.length}</span>
+                    <span className="rmg-counter">{safeActiveImg + 1} / {gallery.length}</span>
                   </>
                 )}
               </div>
@@ -97,9 +110,9 @@ export default function RoomDetailPage() {
                     <button
                       key={i}
                       type="button"
-                      className={`rmg-thumb${i === activeImg ? ' is-active' : ''}`}
+                      className={`rmg-thumb${i === safeActiveImg ? ' is-active' : ''}`}
                       aria-label={`View photo ${i + 1}`}
-                      aria-current={i === activeImg}
+                      aria-current={i === safeActiveImg}
                       onClick={() => setActiveImg(i)}
                     >
                       <img src={src} alt="" loading="lazy" />

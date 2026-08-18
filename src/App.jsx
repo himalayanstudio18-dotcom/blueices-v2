@@ -6,6 +6,7 @@ import MobileMenu from './components/MobileMenu';
 import Footer from './components/Footer';
 import LightboxModal from './components/LightboxModal';
 import ScrollToTop from './components/ScrollToTop';
+import { normalizeIndex } from './lib/normalizeIndex';
 
 import HomePage from './pages/HomePage';
 import StaysPage from './pages/StaysPage';
@@ -22,7 +23,7 @@ const AdminApp = lazy(() => import('./admin/AdminApp'));
    the URL. Needs to sit inside <Router> to read the location, and
    outside the public <Routes> since it swaps out Navbar/Footer
    entirely rather than just the routed page content. */
-function AppShell({ mobileOpen, openMobile, closeMobile, lightboxIdx, setLightboxIdx }) {
+function AppShell({ mobileOpen, openMobile, closeMobile, lightboxIdx, setLightboxIdx, lightboxImages, setLightboxImages }) {
   const location = useLocation();
 
   if (location.pathname.startsWith('/admin')) {
@@ -47,7 +48,7 @@ function AppShell({ mobileOpen, openMobile, closeMobile, lightboxIdx, setLightbo
           <Route path="/stays"       element={<StaysPage />} />
           <Route path="/rooms/:slug" element={<RoomDetailPage />} />
           <Route path="/experiences" element={<ExperiencesPage />} />
-          <Route path="/story"       element={<StoryPage onOpenLightbox={(i) => setLightboxIdx(i)} />} />
+          <Route path="/story"       element={<StoryPage onOpenLightbox={(i, images) => { setLightboxImages(images); setLightboxIdx(i); }} />} />
           <Route path="/contact"     element={<ContactPage />} />
         </Routes>
       </main>
@@ -56,10 +57,11 @@ function AppShell({ mobileOpen, openMobile, closeMobile, lightboxIdx, setLightbo
 
       {lightboxIdx !== null && (
         <LightboxModal
+          images={lightboxImages}
           activeIndex={lightboxIdx}
           onClose={() => setLightboxIdx(null)}
-          onPrev={() => setLightboxIdx((i) => Math.max(0, i - 1))}
-          onNext={() => setLightboxIdx((i) => Math.min(5, i + 1))}
+          onPrev={() => setLightboxIdx((i) => normalizeIndex(i - 1, lightboxImages.length))}
+          onNext={() => setLightboxIdx((i) => normalizeIndex(i + 1, lightboxImages.length))}
         />
       )}
     </>
@@ -71,6 +73,7 @@ function AppInner() {
   const { lang } = useLanguage();
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState(null);
+  const [lightboxImages, setLightboxImages] = useState([]);
 
   const openMobile  = useCallback(() => setMobileOpen(true),  []);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
@@ -101,12 +104,12 @@ function AppInner() {
     const onKey = (e) => {
       if (lightboxIdx === null) return;
       if (e.key === 'Escape')     setLightboxIdx(null);
-      if (e.key === 'ArrowLeft')  setLightboxIdx((i) => Math.max(0, i - 1));
-      if (e.key === 'ArrowRight') setLightboxIdx((i) => Math.min(5, i + 1));
+      if (e.key === 'ArrowLeft')  setLightboxIdx((i) => normalizeIndex(i - 1, lightboxImages.length));
+      if (e.key === 'ArrowRight') setLightboxIdx((i) => normalizeIndex(i + 1, lightboxImages.length));
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [lightboxIdx]);
+  }, [lightboxIdx, lightboxImages]);
 
   return (
     <Router>
@@ -117,6 +120,8 @@ function AppInner() {
         closeMobile={closeMobile}
         lightboxIdx={lightboxIdx}
         setLightboxIdx={setLightboxIdx}
+        lightboxImages={lightboxImages}
+        setLightboxImages={setLightboxImages}
       />
     </Router>
   );

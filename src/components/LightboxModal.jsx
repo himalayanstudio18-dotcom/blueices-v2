@@ -1,27 +1,17 @@
 import React from 'react';
-import { signaturePhotos } from '../assets/photos';
+import { normalizeIndex } from '../lib/normalizeIndex';
 
-/* Captions are index-aligned with signaturePhotos — the gallery
-   passes its own index straight through, so both arrays must
-   stay in the same order or the wrong photo opens. */
-const captions = [
-  'No alarm clock needed here.',
-  'Where mornings are taken slowly.',
-  'The house, and the quiet around it.',
-  'Small corners worth sitting in.',
-  'Every trail leads somewhere worth finding.',
-  'Nothing here is in a hurry.',
-];
+/* Renders whatever gallery dataset the caller opened it with — no
+   photo list of its own, so it can never drift out of sync with
+   whichever carousel launched it. `activeIndex` is normalized at
+   render time (not just by the nav handlers) so a stale or
+   out-of-range index passed in can never read past the array. */
+export default function LightboxModal({ images, activeIndex, onClose, onPrev, onNext }) {
+  if (activeIndex === null || !images || images.length === 0) return null;
 
-const lightboxPhotos = signaturePhotos.map((p, i) => ({
-  src: p.src,
-  alt: p.alt,
-  caption: captions[i] ?? p.alt,
-}));
-
-export default function LightboxModal({ activeIndex, onClose, onPrev, onNext }) {
-  if (activeIndex === null) return null;
-  const photo = lightboxPhotos[activeIndex] || lightboxPhotos[0];
+  const total = images.length;
+  const safeIndex = normalizeIndex(activeIndex, total);
+  const photo = images[safeIndex];
 
   return (
     <div className="lightbox active" role="dialog" aria-modal="true" aria-label="Photo viewer" onClick={onClose}>
@@ -31,7 +21,7 @@ export default function LightboxModal({ activeIndex, onClose, onPrev, onNext }) 
         <button className="lightbox-next" aria-label="Next" onClick={onNext}>›</button>
         <img src={photo.src} alt={photo.caption} className="lightbox-img" />
         <p className="lightbox-caption">{photo.caption}</p>
-        <p className="lightbox-counter">{activeIndex + 1} / {lightboxPhotos.length}</p>
+        <p className="lightbox-counter">{safeIndex + 1} / {total}</p>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export function useGalleryImages(lang) {
     let active = true;
     supabase
       .from('gallery_images')
-      .select('id, storage_path, caption_en, caption_bn, alt_text_en, alt_text_bn')
+      .select('id, storage_path, caption_en, caption_bn, alt_text_en, alt_text_bn, sort_order')
       .eq('is_published', true)
       .order('sort_order')
       .then(({ data, error: err }) => {
@@ -30,6 +30,7 @@ export function useGalleryImages(lang) {
 
   const bn = lang === 'bn';
   const photos = rows?.map((r) => ({
+    id: `db-${r.id}`,
     src: publicUrl(r.storage_path),
     alt: (bn && r.alt_text_bn) || r.alt_text_en || (bn && r.caption_bn) || r.caption_en || '',
     caption: (bn && r.caption_bn) || r.caption_en || '',
