@@ -25,7 +25,7 @@ export default function ProtectedRoute({ children, section }) {
       <div className="admin-fullscreen-state">
         <h1>Access pending</h1>
         <p>
-          You're signed in, but this account isn't set up as staff yet.
+          You&rsquo;re signed in, but this account isn&rsquo;t set up as staff yet.
           Ask the owner to add you.
         </p>
       </div>
@@ -36,7 +36,7 @@ export default function ProtectedRoute({ children, section }) {
     return (
       <div className="admin-fullscreen-state">
         <h1>Restricted</h1>
-        <p>Your role doesn't have access to this section.</p>
+        <p>Your role doesn&rsquo;t have access to this section.</p>
       </div>
     );
   }

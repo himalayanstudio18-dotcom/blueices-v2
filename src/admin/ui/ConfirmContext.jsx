@@ -35,7 +35,6 @@ export function ConfirmProvider({ children }) {
     const onKeyDown = (e) => { if (e.key === 'Escape') settle(false); };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog]);
 
   return (

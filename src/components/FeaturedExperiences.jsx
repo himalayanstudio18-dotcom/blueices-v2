@@ -8,10 +8,10 @@ import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 
 const expIcons = [
-  <SunIcon size={24} color="var(--amber-light)" />,
-  <FireIcon size={24} color="var(--amber-light)" />,
-  <LeafIcon size={24} color="var(--amber-light)" />,
-  <WaterIcon size={24} color="var(--amber-light)" />,
+  <SunIcon key="sun" size={24} color="var(--amber-light)" />,
+  <FireIcon key="fire" size={24} color="var(--amber-light)" />,
+  <LeafIcon key="leaf" size={24} color="var(--amber-light)" />,
+  <WaterIcon key="water" size={24} color="var(--amber-light)" />,
 ];
 
 /* .webp siblings — same resolution, same look, 3.6 MB -> 0.8 MB
@@ -24,12 +24,12 @@ const expImages = [
 ];
 
 const actIcons = [
-  <TrekIcon size={20} color="var(--amber-light)" />,
-  <ViewpointIcon size={20} color="var(--amber-light)" />,
-  <MonasteryIcon size={20} color="var(--amber-light)" />,
-  <FarmIcon size={20} color="var(--amber-light)" />,
-  <StargazingIcon size={20} color="var(--amber-light)" />,
-  <KitchenIcon size={20} color="var(--amber-light)" />,
+  <TrekIcon key="trek" size={20} color="var(--amber-light)" />,
+  <ViewpointIcon key="viewpoint" size={20} color="var(--amber-light)" />,
+  <MonasteryIcon key="monastery" size={20} color="var(--amber-light)" />,
+  <FarmIcon key="farm" size={20} color="var(--amber-light)" />,
+  <StargazingIcon key="stargazing" size={20} color="var(--amber-light)" />,
+  <KitchenIcon key="kitchen" size={20} color="var(--amber-light)" />,
 ];
 
 export default function FeaturedExperiences() {

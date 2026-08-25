@@ -8,7 +8,7 @@ export default function AdminPlaceholder({ title, phase }) {
         <h1>{title}</h1>
       </header>
       <p className="admin-placeholder-note">
-        This section isn't built yet — it's next in the build plan.
+        This section isn&rsquo;t built yet — it&rsquo;s next in the build plan.
       </p>
     </div>
   );

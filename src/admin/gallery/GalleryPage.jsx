@@ -99,7 +99,7 @@ export default function GalleryPage() {
       logActivity(staff, { action: 'publish', entity: 'gallery_image', entityId: img.id, detail: 'draft published' });
       showToast({ type: 'success', title: 'Changes published', message: 'Changes published successfully.' });
       await load();
-    } catch (err) {
+    } catch {
       showToast({ type: 'error', title: 'Publish failed', message: 'Unable to publish changes. Please try again.' });
     } finally {
       setBusyId(null);
@@ -287,7 +287,7 @@ export default function GalleryPage() {
 
               {hasDraft && canEdit && (
                 <div className="admin-gallery-card-actions admin-gallery-card-draft-actions">
-                  <span className="admin-preview-note">You have unpublished edits to this photo's details.</span>
+                  <span className="admin-preview-note">You have unpublished edits to this photo&rsquo;s details.</span>
                   <button className="admin-btn-ghost admin-btn-ghost--danger" onClick={() => handleDiscardDraft(img)} disabled={busy}>
                     Discard Draft
                   </button>

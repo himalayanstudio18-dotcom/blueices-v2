@@ -34,7 +34,7 @@ export default function InquiryForm() {
       await submitInquiry(form);
       setStatus('success');
       setForm(emptyForm);
-    } catch (err) {
+    } catch {
       setStatus('error');
     }
   }

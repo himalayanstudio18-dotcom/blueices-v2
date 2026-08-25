@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
-  getRoom, createRoom, updateRoom,
+  getRoom, createRoom,
   saveRoomDraft, revertRoomDraft,
   uploadRoomImage, deleteRoomImage, setRoomImageOrder, setRoomImageCover,
   roomImagePublicUrl,
@@ -70,9 +70,9 @@ export default function RoomEditor() {
   const [checkedAmenities, setCheckedAmenities] = useState([]);
   const [hasDraft, setHasDraft] = useState(false);
   const [discarding, setDiscarding] = useState(false);
-  const baselineRef = useRef('');
+  const [baseline, setBaseline] = useState('');
 
-  const dirty = JSON.stringify({ form, checkedAmenities }) !== baselineRef.current;
+  const dirty = JSON.stringify({ form, checkedAmenities }) !== baseline;
 
   function toggleAmenity(label) {
     setCheckedAmenities((prev) =>
@@ -108,7 +108,7 @@ export default function RoomEditor() {
       setCheckedAmenities(nextChecked);
       const pendingImages = (room.room_images ?? []).some((img) => img.is_draft);
       setHasDraft(!!room.draft_data || pendingImages);
-      baselineRef.current = JSON.stringify({ form: nextForm, checkedAmenities: nextChecked });
+      setBaseline(JSON.stringify({ form: nextForm, checkedAmenities: nextChecked }));
       setSlugTouched(!!merged.slug);
       setImages([...(room.room_images ?? [])].sort((a, b) => a.sort_order - b.sort_order));
       setLoading(false);
@@ -155,7 +155,7 @@ export default function RoomEditor() {
            instant Save is clicked, even for an already-published
            room. Everything goes into draft_data; Publish (from the
            Preview screen) is the only thing that copies it live. */
-        const previousPrice = JSON.parse(baselineRef.current || '{}').form?.price;
+        const previousPrice = JSON.parse(baseline || '{}').form?.price;
         const priceChanged = String(previousPrice ?? '') !== String(form.price ?? '');
         await saveRoomDraft(id, payload);
         logActivity(staff, {
@@ -167,7 +167,7 @@ export default function RoomEditor() {
           newValue: priceChanged ? `₹${form.price}` : undefined,
         });
         setHasDraft(true);
-        baselineRef.current = JSON.stringify({ form, checkedAmenities });
+        setBaseline(JSON.stringify({ form, checkedAmenities }));
         showToast({ type: 'success', title: 'Draft saved', message: 'Preview your changes before publishing them.' });
       }
     } catch (err) {
@@ -212,7 +212,7 @@ export default function RoomEditor() {
       setForm(nextForm);
       setCheckedAmenities(nextChecked);
       setHasDraft(false);
-      baselineRef.current = JSON.stringify({ form: nextForm, checkedAmenities: nextChecked });
+      setBaseline(JSON.stringify({ form: nextForm, checkedAmenities: nextChecked }));
     } catch (err) {
       showToast({ type: 'error', title: 'Discard failed', message: friendlyError(err, 'discard this draft') });
     } finally {
@@ -281,7 +281,7 @@ export default function RoomEditor() {
     return (
       <div className="admin-fullscreen-state">
         <h1>Restricted</h1>
-        <p>Your role doesn't have access to {isNew ? 'add new rooms' : 'edit rooms'}.</p>
+        <p>Your role doesn&rsquo;t have access to {isNew ? 'add new rooms' : 'edit rooms'}.</p>
       </div>
     );
   }
@@ -311,7 +311,7 @@ export default function RoomEditor() {
 
       {!isNew && (
         <p className="admin-placeholder-note admin-editor-hint">
-          Editing an existing room saves to a draft — the live public page won't change until you preview and publish.
+          Editing an existing room saves to a draft — the live public page won&rsquo;t change until you preview and publish.
         </p>
       )}
 

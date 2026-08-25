@@ -7,12 +7,12 @@ import { usePublishedRooms } from '../lib/usePublishedRooms';
 import RoomDetailsModal from './RoomDetailsModal';
 
 const amenityIcons = [
-  <KitchenIcon size={20} color="var(--amber-light)" />,
-  <ElevationIcon size={20} color="var(--amber-light)" />,
-  <FireIcon size={20} color="var(--amber-light)" />,
-  <WifiIcon size={20} color="var(--amber-light)" />,
-  <CarIcon size={20} color="var(--amber-light)" />,
-  <TeaIcon size={20} color="var(--amber-light)" />,
+  <KitchenIcon key="kitchen" size={20} color="var(--amber-light)" />,
+  <ElevationIcon key="elevation" size={20} color="var(--amber-light)" />,
+  <FireIcon key="fire" size={20} color="var(--amber-light)" />,
+  <WifiIcon key="wifi" size={20} color="var(--amber-light)" />,
+  <CarIcon key="car" size={20} color="var(--amber-light)" />,
+  <TeaIcon key="tea" size={20} color="var(--amber-light)" />,
 ];
 
 export default function FeaturedStay() {

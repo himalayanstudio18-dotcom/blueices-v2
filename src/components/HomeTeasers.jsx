@@ -6,10 +6,10 @@ import t from '../translations';
 import { photos, galleryPhotos } from '../assets/photos';
 
 const expIcons = [
-  <SunIcon size={20} color="var(--amber-light)" />,
-  <FireIcon size={20} color="var(--amber-light)" />,
-  <LeafIcon size={20} color="var(--amber-light)" />,
-  <WaterIcon size={20} color="var(--amber-light)" />,
+  <SunIcon key="sun" size={20} color="var(--amber-light)" />,
+  <FireIcon key="fire" size={20} color="var(--amber-light)" />,
+  <LeafIcon key="leaf" size={20} color="var(--amber-light)" />,
+  <WaterIcon key="water" size={20} color="var(--amber-light)" />,
 ];
 
 /* Experiences keep the generated artwork — these depict moments

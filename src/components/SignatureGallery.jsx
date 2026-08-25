@@ -259,7 +259,7 @@ export default function SignatureGallery({ onOpenLightbox }) {
 
     prevVisibleRef.current = new Set(map.keys());
     hasEntered.current = true;
-  }, [centerIndex, total, visibleCount]);
+  }, [safeCenterIndex, total, visibleCount]);
 
   /* ── Breakpoint watch — only touches state when the visible-card
      bucket actually changes (640 / 1279 / above). Repositioning is
@@ -329,7 +329,7 @@ export default function SignatureGallery({ onOpenLightbox }) {
       container.removeEventListener('mouseleave', onLeave);
       clearTimeout(leaveTimer);
     };
-  }, [centerIndex, total, visibleCount]);
+  }, [safeCenterIndex, total, visibleCount]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowLeft') { e.preventDefault(); cycle('left'); }

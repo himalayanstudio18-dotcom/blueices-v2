@@ -3,6 +3,7 @@
    index.js — Cinematic Interaction, Hero Mouse Parallax & Particles Engine
    ═══════════════════════════════════════════════════════════════════ */
 
+/* global Lenis */
 'use strict';
 
 // ─── REDUCED MOTION GUARD ────────────────────────────────────────────
@@ -545,7 +546,6 @@ document.addEventListener('keydown', (e) => {
 function initWeather() {
   const tempEl = document.getElementById('weather-temp');
   const feelsEl = document.getElementById('weather-feels');
-  const descEl = document.getElementById('weather-desc');
   const cloudsEl = document.getElementById('weather-clouds');
   const scoreEl = document.getElementById('weather-score');
   const tipEl = document.getElementById('weather-tip');

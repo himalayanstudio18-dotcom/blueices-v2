@@ -43,7 +43,6 @@ export async function getUniqueSlug(baseSlug, excludeId) {
   if (!baseSlug) return baseSlug;
   let candidate = baseSlug;
   let attempt = 1;
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     let query = supabase.from('rooms').select('id').eq('slug', candidate);
     if (excludeId) query = query.neq('id', excludeId);
@@ -119,7 +118,7 @@ export async function duplicateRoom(id) {
   const { data: existing } = await supabase.from('rooms').select('sort_order').order('sort_order', { ascending: false }).limit(1);
   const nextSortOrder = (existing?.[0]?.sort_order ?? 0) + 1;
 
-  const { room_images, id: _id, created_at, updated_at, draft_data, ...fields } = source;
+  const { room_images: _roomImages, id: _id, created_at: _createdAt, updated_at: _updatedAt, draft_data: _draftData, ...fields } = source;
   const { data, error } = await supabase
     .from('rooms')
     .insert({

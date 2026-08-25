@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES, SECTIONS } from './sectionConfig';
 import { listSiteContent, saveDraftContent, publishAllDrafts, revertAllDrafts } from './siteContentApi';
@@ -19,7 +19,7 @@ export default function SiteContentPage() {
   const [savedKey, setSavedKey] = useState(null);
   const [publishing, setPublishing] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     setContent(null);
     try {
       setContent(await listSiteContent(page));
@@ -27,9 +27,9 @@ export default function SiteContentPage() {
     } catch (err) {
       setError(friendlyError(err, "load this page's content"));
     }
-  }
+  }, [page]);
 
-  useEffect(() => { load(); }, [page]);
+  useEffect(() => { load(); }, [load]);
 
   async function save(sectionKey, fields, previousValue) {
     try {
@@ -64,7 +64,7 @@ export default function SiteContentPage() {
       logActivity(staff, { action: 'publish', entity: 'site_content', detail: `${page} — ${draftKeys.length} section(s)` });
       showToast({ type: 'success', title: 'Changes published', message: 'Changes published successfully.' });
       await load();
-    } catch (err) {
+    } catch {
       showToast({ type: 'error', title: 'Publish failed', message: 'Unable to publish changes. Please try again.' });
     } finally {
       setPublishing(false);

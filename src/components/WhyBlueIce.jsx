@@ -5,9 +5,9 @@ import t from '../translations';
 import { whyPhotos } from '../assets/photos';
 
 const icons = [
-  <HomeIcon size={26} color="var(--amber-light)" />,
-  <CloudIcon size={26} color="var(--amber-light)" />,
-  <MapIcon size={26} color="var(--amber-light)" />,
+  <HomeIcon key="home" size={26} color="var(--amber-light)" />,
+  <CloudIcon key="cloud" size={26} color="var(--amber-light)" />,
+  <MapIcon key="map" size={26} color="var(--amber-light)" />,
 ];
 
 const images = whyPhotos;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { getRoom, publishRoomDraft, revertRoomDraft } from './roomsApi';
 import { shapeRoom } from '../../lib/usePublishedRooms';
@@ -21,16 +21,16 @@ export default function RoomPreview() {
   const [modalOpen, setModalOpen] = useState(true);
   const [previewLang, setPreviewLang] = useState('en');
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setRoom(await getRoom(id));
       setError('');
     } catch (err) {
       setError(friendlyError(err, 'load this room'));
     }
-  }
+  }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   if (error) {
     return (

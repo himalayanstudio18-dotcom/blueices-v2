@@ -60,6 +60,102 @@ function swapItems(list, i, j) {
   return next;
 }
 
+function TextField({ settings, shown, save, savedField, field, label, type = 'text' }) {
+  if (!settings) return null;
+  const value = shown(field);
+  return (
+    <label className="admin-field">
+      <span>{label} {savedField === field && <span className="admin-content-saved">Draft saved</span>}</span>
+      <input
+        type={type}
+        defaultValue={value ?? ''}
+        key={`${field}-${value}`}
+        onBlur={(e) => e.target.value !== (value ?? '') && save(field, e.target.value || null)}
+      />
+    </label>
+  );
+}
+
+function ToggleField({ settings, shown, save, field, label }) {
+  if (!settings) return null;
+  return (
+    <label className="admin-field admin-field--checkbox">
+      <input type="checkbox" checked={!!shown(field)} onChange={(e) => save(field, e.target.checked)} />
+      <span>{label}</span>
+    </label>
+  );
+}
+
+function InquiryNumbersField({ settings, shown, save, savedField, inquiryError, setInquiryError }) {
+  if (!settings) return null;
+  const raw = shown('inquiry_numbers');
+  const list = Array.isArray(raw) && raw.length ? raw : [''];
+
+  function commit(next) {
+    setInquiryError('');
+    save('inquiry_numbers', next);
+  }
+
+  function handleBlur(i, typed) {
+    const trimmed = typed.trim();
+    if (trimmed === (list[i] ?? '')) return;
+    if (trimmed) {
+      const digits = trimmed.replace(/\D/g, '');
+      if (digits.length < 7 || digits.length > 15) {
+        setInquiryError('Enter a valid phone number (7–15 digits) or remove it.');
+        return;
+      }
+    }
+    const next = [...list];
+    next[i] = trimmed;
+    commit(next);
+  }
+
+  return (
+    <div className="admin-field admin-inquiry-numbers">
+      <span>
+        Inquiry Numbers {savedField === 'inquiry_numbers' && <span className="admin-content-saved">Draft saved</span>}
+      </span>
+      <div className="admin-inquiry-number-list">
+        {list.map((n, i) => (
+          <div className="admin-inquiry-number-row" key={i}>
+            <input
+              type="tel"
+              defaultValue={n}
+              key={`inquiry-${i}-${n}`}
+              placeholder="e.g. 9804974595"
+              onBlur={(e) => handleBlur(i, e.target.value)}
+            />
+            <div className="admin-room-row-reorder admin-gallery-reorder">
+              <button
+                type="button"
+                onClick={() => commit(swapItems(list, i, i - 1))}
+                disabled={i === 0}
+                aria-label="Move number up"
+              >↑</button>
+              <button
+                type="button"
+                onClick={() => commit(swapItems(list, i, i + 1))}
+                disabled={i === list.length - 1}
+                aria-label="Move number down"
+              >↓</button>
+            </div>
+            <button
+              type="button"
+              className="admin-btn-ghost admin-btn-ghost--danger"
+              onClick={() => commit(list.length > 1 ? list.filter((_, idx) => idx !== i) : [''])}
+            >Remove</button>
+          </div>
+        ))}
+      </div>
+      {inquiryError && <p className="admin-auth-error">{inquiryError}</p>}
+      <button type="button" className="admin-btn-ghost" onClick={() => commit([...list, ''])}>
+        + Add Another Number
+      </button>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const { staff, user, role, signOut, refreshStaff } = useAdminAuth();
   const TABS = visibleSettingsTabs(role);
@@ -118,7 +214,7 @@ export default function SettingsPage() {
       logActivity(staff, { action: 'settings_change', entity: 'settings', detail: `${Object.keys(draft).length} field(s) published` });
       showToast({ type: 'success', title: 'Changes published', message: 'Changes published successfully.' });
       await load();
-    } catch (err) {
+    } catch {
       showToast({ type: 'error', title: 'Publish failed', message: 'Unable to publish changes. Please try again.' });
     } finally {
       setPublishing(false);
@@ -141,102 +237,6 @@ export default function SettingsPage() {
     }
   }
 
-  function TextField({ field, label, type = 'text' }) {
-    if (!settings) return null;
-    const value = shown(field);
-    return (
-      <label className="admin-field">
-        <span>{label} {savedField === field && <span className="admin-content-saved">Draft saved</span>}</span>
-        <input
-          type={type}
-          defaultValue={value ?? ''}
-          key={`${field}-${value}`}
-          onBlur={(e) => e.target.value !== (value ?? '') && save(field, e.target.value || null)}
-        />
-      </label>
-    );
-  }
-
-  function ToggleField({ field, label }) {
-    if (!settings) return null;
-    return (
-      <label className="admin-field admin-field--checkbox">
-        <input type="checkbox" checked={!!shown(field)} onChange={(e) => save(field, e.target.checked)} />
-        <span>{label}</span>
-      </label>
-    );
-  }
-
-  function InquiryNumbersField() {
-    if (!settings) return null;
-    const raw = shown('inquiry_numbers');
-    const list = Array.isArray(raw) && raw.length ? raw : [''];
-
-    function commit(next) {
-      setInquiryError('');
-      save('inquiry_numbers', next);
-    }
-
-    function handleBlur(i, typed) {
-      const trimmed = typed.trim();
-      if (trimmed === (list[i] ?? '')) return;
-      if (trimmed) {
-        const digits = trimmed.replace(/\D/g, '');
-        if (digits.length < 7 || digits.length > 15) {
-          setInquiryError('Enter a valid phone number (7–15 digits) or remove it.');
-          return;
-        }
-      }
-      const next = [...list];
-      next[i] = trimmed;
-      commit(next);
-    }
-
-    return (
-      <div className="admin-field admin-inquiry-numbers">
-        <span>
-          Inquiry Numbers {savedField === 'inquiry_numbers' && <span className="admin-content-saved">Draft saved</span>}
-        </span>
-        <div className="admin-inquiry-number-list">
-          {list.map((n, i) => (
-            <div className="admin-inquiry-number-row" key={i}>
-              <input
-                type="tel"
-                defaultValue={n}
-                key={`inquiry-${i}-${n}`}
-                placeholder="e.g. 9804974595"
-                onBlur={(e) => handleBlur(i, e.target.value)}
-              />
-              <div className="admin-room-row-reorder admin-gallery-reorder">
-                <button
-                  type="button"
-                  onClick={() => commit(swapItems(list, i, i - 1))}
-                  disabled={i === 0}
-                  aria-label="Move number up"
-                >↑</button>
-                <button
-                  type="button"
-                  onClick={() => commit(swapItems(list, i, i + 1))}
-                  disabled={i === list.length - 1}
-                  aria-label="Move number down"
-                >↓</button>
-              </div>
-              <button
-                type="button"
-                className="admin-btn-ghost admin-btn-ghost--danger"
-                onClick={() => commit(list.length > 1 ? list.filter((_, idx) => idx !== i) : [''])}
-              >Remove</button>
-            </div>
-          ))}
-        </div>
-        {inquiryError && <p className="admin-auth-error">{inquiryError}</p>}
-        <button type="button" className="admin-btn-ghost" onClick={() => commit([...list, ''])}>
-          + Add Another Number
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="admin-page">
       <header className="admin-page-header admin-page-header--row">
@@ -257,7 +257,7 @@ export default function SettingsPage() {
 
       {tab !== 'Account' && (
         <p className="admin-placeholder-note admin-editor-hint">
-          Changes save as a draft — the live site won't change until you Publish.
+          Changes save as a draft — the live site won&rsquo;t change until you Publish.
         </p>
       )}
 
@@ -287,16 +287,16 @@ export default function SettingsPage() {
       {settings && tab === 'Property' && (
         <div className="admin-content-card">
           <div className="admin-form-grid">
-            <TextField field="property_name" label="Property Name" />
-            <TextField field="logo_url" label="Logo URL" />
-            <TextField field="favicon_url" label="Favicon URL" />
-            <TextField field="phone" label="Phone" />
-            <TextField field="email" label="Email" type="email" />
-            <TextField field="whatsapp" label="WhatsApp Number (digits only, with country code)" />
-            <TextField field="checkin_time" label="Check-in Time" />
-            <TextField field="checkout_time" label="Check-out Time" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="property_name" label="Property Name" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="logo_url" label="Logo URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="favicon_url" label="Favicon URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="phone" label="Phone" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="email" label="Email" type="email" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="whatsapp" label="WhatsApp Number (digits only, with country code)" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="checkin_time" label="Check-in Time" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="checkout_time" label="Check-out Time" />
           </div>
-          <InquiryNumbersField />
+          <InquiryNumbersField settings={settings} shown={shown} save={save} savedField={savedField} inquiryError={inquiryError} setInquiryError={setInquiryError} />
         </div>
       )}
 
@@ -304,15 +304,15 @@ export default function SettingsPage() {
         <div className="admin-content-card" style={{ marginTop: '1rem' }}>
           <h2 className="admin-content-card-header">Location &amp; Map</h2>
           <div className="admin-form-grid">
-            <TextField field="address" label="Property Address" />
-            <TextField field="location_label" label="Location Label (e.g. Find Us)" />
-            <TextField field="google_maps_url" label="Google Maps Location URL" />
-            <TextField field="google_maps_embed_url" label="Google Maps Embed URL" />
-            <TextField field="latitude" label="Latitude" type="number" />
-            <TextField field="longitude" label="Longitude" type="number" />
-            <TextField field="location_note" label="Directions / Location Note" />
-            <TextField field="map_cta_label_en" label="English Map CTA Label" />
-            <TextField field="map_cta_label_bn" label="Bengali Map CTA Label" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="address" label="Property Address" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="location_label" label="Location Label (e.g. Find Us)" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="google_maps_url" label="Google Maps Location URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="google_maps_embed_url" label="Google Maps Embed URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="latitude" label="Latitude" type="number" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="longitude" label="Longitude" type="number" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="location_note" label="Directions / Location Note" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="map_cta_label_en" label="English Map CTA Label" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="map_cta_label_bn" label="Bengali Map CTA Label" />
           </div>
 
           <div className="admin-location-actions">
@@ -360,11 +360,11 @@ export default function SettingsPage() {
       {settings && tab === 'Booking' && (
         <div className="admin-content-card">
           <div className="admin-form-grid">
-            <ToggleField field="booking_enabled" label="Inquiries Enabled" />
-            <TextField field="min_stay" label="Minimum Stay (nights)" type="number" />
-            <TextField field="max_guests" label="Maximum Guests" type="number" />
-            <TextField field="cancellation_policy" label="Cancellation Policy (short summary)" />
-            <TextField field="booking_message" label="Booking Message" />
+            <ToggleField settings={settings} shown={shown} save={save} field="booking_enabled" label="Inquiries Enabled" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="min_stay" label="Minimum Stay (nights)" type="number" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="max_guests" label="Maximum Guests" type="number" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="cancellation_policy" label="Cancellation Policy (short summary)" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="booking_message" label="Booking Message" />
           </div>
         </div>
       )}
@@ -372,10 +372,10 @@ export default function SettingsPage() {
       {settings && tab === 'Social' && (
         <div className="admin-content-card">
           <div className="admin-form-grid">
-            <TextField field="instagram_url" label="Instagram URL" />
-            <TextField field="facebook_url" label="Facebook URL" />
-            <TextField field="youtube_url" label="YouTube URL" />
-            <TextField field="google_business_url" label="Google Business Profile URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="instagram_url" label="Instagram URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="facebook_url" label="Facebook URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="youtube_url" label="YouTube URL" />
+            <TextField settings={settings} shown={shown} save={save} savedField={savedField} field="google_business_url" label="Google Business Profile URL" />
           </div>
         </div>
       )}
@@ -383,9 +383,9 @@ export default function SettingsPage() {
       {settings && tab === 'Notifications' && (
         <div className="admin-content-card">
           <div className="admin-form-grid">
-            <ToggleField field="notify_new_inquiry" label="Notify on New Inquiry" />
-            <ToggleField field="notify_booking" label="Notify on Booking Confirmation" />
-            <ToggleField field="notify_staff" label="Notify on Staff Changes" />
+            <ToggleField settings={settings} shown={shown} save={save} field="notify_new_inquiry" label="Notify on New Inquiry" />
+            <ToggleField settings={settings} shown={shown} save={save} field="notify_booking" label="Notify on Booking Confirmation" />
+            <ToggleField settings={settings} shown={shown} save={save} field="notify_staff" label="Notify on Staff Changes" />
           </div>
         </div>
       )}

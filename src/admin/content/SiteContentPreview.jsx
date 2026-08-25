@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SECTIONS, PAGES } from './sectionConfig';
 import { listSiteContent, publishAllDrafts, revertAllDrafts } from './siteContentApi';
@@ -49,11 +49,11 @@ export default function SiteContentPreview() {
   const sections = SECTIONS[page] ?? [];
   const pageLabel = PAGES.find((p) => p.value === page)?.label ?? page;
 
-  async function load() {
+  const load = useCallback(async () => {
     setContent(await listSiteContent(page));
-  }
+  }, [page]);
 
-  useEffect(() => { load(); }, [page]);
+  useEffect(() => { load(); }, [load]);
 
   if (!content) return <div className="admin-page"><p>Loading preview…</p></div>;
 
@@ -118,7 +118,7 @@ export default function SiteContentPreview() {
             {pageLabel} preview — {hasDraft ? 'showing your unpublished draft' : 'no pending draft, showing the live version'}.
           </p>
           <p className="admin-placeholder-note">
-            This page only has SEO meta fields, which don't have a visible on-page appearance to preview —
+            This page only has SEO meta fields, which don&rsquo;t have a visible on-page appearance to preview —
             they affect how the page shows up in search results and link previews instead. Pending changes:
           </p>
           <ul>
