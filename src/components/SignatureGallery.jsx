@@ -129,10 +129,11 @@ export default function SignatureGallery({ onOpenLightbox }) {
     id: `static-${i}`,
     ...p,
     caption: tx.photos[i]?.caption ?? p.alt,
+    sortOrder: i,
   }));
   const staticSrcs = new Set(staticCards.map((c) => c.src));
   const newAdminCards = (dbPhotos ?? []).filter((c) => !staticSrcs.has(c.src));
-  const cards = [...staticCards, ...newAdminCards];
+  const cards = [...staticCards, ...newAdminCards].sort((a, b) => a.sortOrder - b.sortOrder);
   const total = cards.length;
 
   const [centerIndex, setCenterIndex] = useState(Math.floor(total / 2));

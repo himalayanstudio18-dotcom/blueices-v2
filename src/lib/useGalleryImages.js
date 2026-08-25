@@ -34,6 +34,7 @@ export function useGalleryImages(lang) {
     src: publicUrl(r.storage_path),
     alt: (bn && r.alt_text_bn) || r.alt_text_en || (bn && r.caption_bn) || r.caption_en || '',
     caption: (bn && r.caption_bn) || r.caption_en || '',
+    sortOrder: r.sort_order,
   }));
 
   return { photos, loading: rows === null && !error, error };
