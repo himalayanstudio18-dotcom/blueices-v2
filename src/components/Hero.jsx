@@ -80,6 +80,17 @@ export default function Hero() {
         </svg>
       </div>
 
+      {/* The hero's own end marker — fades into whatever section
+          renders next and caps it with the same fine gold divider
+          every other page's hero uses at this boundary (see
+          StaysHero.jsx's .stays-hero-bottom-fade). Belongs to the
+          hero itself so it stays correctly positioned regardless of
+          which section follows (previously this line lived on
+          .home-welcome-section's own top edge, which broke the
+          moment a section other than Welcome — the homepage video —
+          was inserted directly after Hero). */}
+      <div className="hero-bottom-fade" aria-hidden="true"></div>
+
       <div className="hero-scroll-hint" aria-hidden="true">
         <div className="scroll-dot"></div>
         <span>Scroll</span>

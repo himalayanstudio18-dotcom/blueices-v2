@@ -1087,6 +1087,35 @@ button { border: none; background: none; font-family: inherit; }
   height: clamp(140px, 18vw, 240px);
 }
 
+/* Hero's own bottom boundary — fades the photo into the next
+   section's surface and caps it with the same 3px gold divider used
+   at this same "end of hero" seam on every other page (see
+   .stays-hero-bottom-fade::after). Sits above the mountain silhouette
+   (z-index 4) so the gold line reads clearly against it. Visible at
+   every breakpoint — unlike .stays-hero-bottom-fade, which is
+   desktop-only for that hero's own compositional reasons, this one
+   replaces what used to be an always-on line (formerly drawn by
+   .home-welcome-section::before), so it must stay always-on too. */
+.hero-bottom-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(140px, 18vw, 240px);
+  background: linear-gradient(to bottom, rgba(10,8,5,0) 0%, var(--bg-dark) 100%);
+  z-index: 6;
+  pointer-events: none;
+}
+.hero-bottom-fade::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+}
+
 /* Scroll hint */
 .hero-scroll-hint {
   position: absolute;
@@ -5946,17 +5975,6 @@ section + section {
   position: relative;
   padding: clamp(4rem, 8vw, 7rem) 0;
   background: var(--bg-dark);
-}
-
-/* The fine gold seam every other page's hero already dissolves
-   into (e.g. .stays-hero-bottom-fade::after) — the homepage hero
-   never had one, since it has no bottom-fade element of its own. */
-.home-welcome-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--amber), transparent);
 }
 
 .hw-grid {
