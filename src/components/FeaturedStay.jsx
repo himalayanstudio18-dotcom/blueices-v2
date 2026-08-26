@@ -38,6 +38,7 @@ export default function FeaturedStay() {
             {tx.h2line1} <em>{tx.h2line2}</em>
           </h2>
           <p className="section-sub">{tx.sub}</p>
+          <p className="eyebrow-warm stays-scroll-cue">{tx.scrollCue}</p>
         </div>
 
         {/* Room Cards */}

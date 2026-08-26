@@ -3061,6 +3061,14 @@ button { border: none; background: none; font-family: inherit; }
   margin-right: auto;
 }
 
+/* Quiet scroll cue signalling more rooms sit below the fold — most
+   needed on mobile, where the grid collapses to one column and only
+   the first room card is visible on landing. */
+.stays-scroll-cue {
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  opacity: 0.85;
+}
+
 .stays-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
