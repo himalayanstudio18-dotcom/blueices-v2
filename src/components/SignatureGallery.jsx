@@ -136,6 +136,15 @@ export default function SignatureGallery({ onOpenLightbox }) {
   const cards = [...staticCards, ...newAdminCards].sort((a, b) => a.sortOrder - b.sortOrder);
   const total = cards.length;
 
+  /* Latest `cards` for effects to read without going in their deps —
+     `cards` is a fresh array every render, so depending on it directly
+     would re-run the layout effect (and replay enter animations) on
+     every unrelated re-render instead of only on real navigation. */
+  const cardsRef = useRef(cards);
+  useEffect(() => {
+    cardsRef.current = cards;
+  });
+
   const [centerIndex, setCenterIndex] = useState(Math.floor(total / 2));
   const [visibleCount, setVisibleCount] = useState(() => visibleCountForWidth(typeof window !== 'undefined' ? window.innerWidth : 1200));
 
@@ -148,6 +157,13 @@ export default function SignatureGallery({ onOpenLightbox }) {
   const fanRef = useRef(null);
   const hasEntered = useRef(false);
   const directionRef = useRef('right');
+  /* Set of stable card ids (not array indices) visible after the last
+     layout pass. Admin uploads resolve asynchronously and can insert
+     anywhere in the sorted order (not just append), shifting every
+     later card's index — an index-keyed set would then read a shifted
+     static card as "already visible" (skipping its enter animation)
+     or misjudge a genuinely new card as already-present, leaving two
+     cards momentarily targeting the same tier/position. */
   const prevVisibleRef = useRef(new Set());
 
   /* `total` can shrink between renders — e.g. the static 14-photo
@@ -178,13 +194,22 @@ export default function SignatureGallery({ onOpenLightbox }) {
     setCenterIndex((prev) => (dir === 'right' ? (prev + 1) % total : (prev - 1 + total) % total));
   }, [total]);
 
-  /* Anchor every card to dead-center once; all further movement is
-     layered on top via GSAP's own x/y (not the CSS transform). */
+  /* Anchor every card to dead-center; all further movement is layered
+     on top via GSAP's own x/y (not the CSS transform). Re-runs on
+     `total` (not just mount) because cards mount asynchronously —
+     dbPhotos is always null on first paint, so any admin-sourced card
+     is a DOM node created after this effect's original one-shot pass.
+     An unanchored card keeps its default (un-centered) CSS position
+     and only gets the layout effect's relative x/y nudge on top of
+     that, landing offset from — and visually overlapping — whichever
+     card is correctly anchored at center: the "duplicate hero card"
+     bug. Re-anchoring on every count change is idempotent for cards
+     already at -50%/-50%. */
   useEffect(() => {
     const container = fanRef.current;
     if (!container) return;
     gsap.set(container.querySelectorAll('.fan-card'), { xPercent: -50, yPercent: -50 });
-  }, []);
+  }, [total]);
 
   /* ── Layout — entrance, re-slot on navigate, enter/exit at the
      visible-window edge when the breakpoint hides some cards ── */
@@ -201,10 +226,11 @@ export default function SignatureGallery({ onOpenLightbox }) {
     const prevVisible = prevVisibleRef.current;
     const direction = directionRef.current;
     const viewportW = window.innerWidth;
+    const currentIds = cardsRef.current.map((c) => c.id);
 
     cardEls.forEach((card, i) => {
       const d = map.get(i);
-      const wasVisible = prevVisible.has(i);
+      const wasVisible = prevVisible.has(currentIds[i]);
 
       if (d !== undefined) {
         const target = targetFor(d, cardW, cardH, viewportW);
@@ -258,7 +284,7 @@ export default function SignatureGallery({ onOpenLightbox }) {
       }
     });
 
-    prevVisibleRef.current = new Set(map.keys());
+    prevVisibleRef.current = new Set(Array.from(map.keys(), (idx) => currentIds[idx]));
     hasEntered.current = true;
   }, [safeCenterIndex, total, visibleCount]);
 
