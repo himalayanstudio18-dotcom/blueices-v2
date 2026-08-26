@@ -109,6 +109,7 @@ const t = {
       h2: 'Not a Hotel. A Home That Remembers You.',
       sub: '100% Organic Farm Kitchen \u00B7 3,800 ft Cloudline Vistas \u00B7 Genuine Sikkim Hospitality',
       cta: 'Discover Why Guests Return \u2192',
+      ctaRooms: 'View Rooms \u2192',
     },
 
     /* STAYS PAGE */
@@ -519,6 +520,7 @@ const t = {
       h2: 'এটি হোটেল নয় — এমন এক ঘর, যা আপনাকে মনে রাখে।',
       sub: 'শতভাগ জৈব খামারের রান্না · ৩,৮০০ ফুট পাহাড়ি নিস্তব্ধতা · মাটির কাছের মানুষের আতিথেয়তা',
       cta: 'অতিথিরা কেন বারবার ফেরেন →',
+      ctaRooms: 'ঘরগুলি দেখুন →',
     },
     /* STAYS PAGE */
     staysPage: {

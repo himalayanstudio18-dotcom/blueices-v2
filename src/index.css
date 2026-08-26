@@ -6234,6 +6234,10 @@ section + section {
    follows the statement, not a button stranded beside it. */
 .hwt-cta {
   margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
 }
 
 @media (max-width: 768px) {

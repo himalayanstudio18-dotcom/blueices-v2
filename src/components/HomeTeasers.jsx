@@ -210,9 +210,14 @@ export function HomeWhyTeaser() {
             <p className="eyebrow-warm">{tx.eyebrow}</p>
             <h2>{tx.h2}</h2>
             <p>{tx.sub}</p>
-            <Link to="/story" className="btn-outline-warm hwt-cta">
-              {tx.cta}
-            </Link>
+            <div className="hwt-cta">
+              <Link to="/story" className="btn-outline-warm">
+                {tx.cta}
+              </Link>
+              <Link to="/stays" className="btn-warm">
+                {tx.ctaRooms}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
