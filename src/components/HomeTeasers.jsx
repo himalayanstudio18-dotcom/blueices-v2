@@ -214,7 +214,7 @@ export function HomeWhyTeaser() {
               <Link to="/story" className="btn-outline-warm">
                 {tx.cta}
               </Link>
-              <Link to="/stays" className="btn-warm">
+              <Link to="/stays#stays" className="btn-warm">
                 {tx.ctaRooms}
               </Link>
             </div>
