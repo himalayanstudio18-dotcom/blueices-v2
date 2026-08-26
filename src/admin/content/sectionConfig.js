@@ -18,6 +18,16 @@ export const SECTIONS = {
     { key: 'hero_cta_text', label: 'Hero CTA Text', type: 'text', bilingual: true },
     { key: 'hero_cta_link', label: 'Hero CTA Link', type: 'text', bilingual: false },
     { key: 'hero_image', label: 'Hero Image URL', type: 'text', bilingual: false },
+    {
+      key: 'final_cta_background_image',
+      label: 'Final CTA Background Image',
+      type: 'image',
+      bilingual: false,
+      description: 'Background image used for the final reservation CTA section ("Ready to Step Above the Clouds?") immediately above the footer. Appears on both the Homepage and the Stays page — it does not affect any other hero image.',
+      // Must match FinalCTA.jsx's own hardcoded fallback exactly — shown
+      // in the admin preview whenever no custom image has been published yet.
+      defaultUrl: '/images/timeline_stargazing.webp',
+    },
     { key: 'seo_title', label: 'SEO Meta Title', type: 'text', bilingual: false },
     { key: 'seo_description', label: 'SEO Meta Description', type: 'textarea', bilingual: false },
     { key: 'seo_og_image', label: 'SEO Share Image URL', type: 'text', bilingual: false },

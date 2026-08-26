@@ -2,13 +2,26 @@ import React from 'react';
 import { StarIcon, ZapIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
+import { useSiteContent } from '../lib/useSiteContent';
 import { useSettings } from '../lib/useSettings';
 import { normalizeWhatsAppNumber } from '../lib/phone';
+
+/* Kept as the literal fallback so the section can never render with a
+   missing/blank background — mirrors admin/content/sectionConfig.js's
+   `defaultUrl` for this same field (must stay in sync with it). */
+const DEFAULT_CTA_BACKGROUND = '/images/timeline_stargazing.webp';
 
 export default function FinalCTA() {
   const { lang } = useLanguage();
   const tx = t[lang].finalCta;
   const settings = useSettings();
+  /* This section renders on both the Homepage and the Stays page, but
+     its background image is administered once, under the Homepage
+     tab in Site Content — same page/section_key regardless of which
+     public route is currently showing it, so there is exactly one
+     canonical published value. */
+  const { get } = useSiteContent('home', lang);
+  const backgroundImage = get('final_cta_background_image', DEFAULT_CTA_BACKGROUND);
   const whatsappNumber = normalizeWhatsAppNumber(settings?.whatsapp || '919804974595');
   const phone = settings?.phone || '+919804974595';
 
@@ -17,7 +30,7 @@ export default function FinalCTA() {
       {/* Same stargazing plate the desktop CTA uses (previously only
           applied there via a CSS !important override beating this
           inline style) — mobile/tablet now render identical imagery. */}
-      <div className="cta-bg" style={{ backgroundImage: "url('/images/timeline_stargazing.webp')" }}></div>
+      <div className="cta-bg" style={{ backgroundImage: `url('${backgroundImage}')` }}></div>
       <div className="cta-grade" aria-hidden="true"></div>
       <div className="cta-overlay"></div>
 

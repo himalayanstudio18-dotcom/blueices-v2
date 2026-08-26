@@ -7325,17 +7325,17 @@ section + section {
     align-items: center;
   }
 
-  /* Swaps to the stargazing plate — the mountain cabin and its
-     campfire under the Milky Way, a much stronger closing image
-     than the daylight valley photo mobile keeps. Position keeps
-     the cabin (the emotional subject: lit windows, a hearth) and
-     the mountain silhouette fully in frame, biased slightly high
-     to hold as much of the Milky Way's arc as a cover-fit crop
-     allows. Desktop only; mobile's photo is set inline by
-     FinalCTA.jsx, which otherwise always wins over a stylesheet
-     rule, hence !important. */
+  /* Position/filter tuning for the stargazing plate — the mountain
+     cabin and its campfire under the Milky Way. Position keeps the
+     cabin (the emotional subject: lit windows, a hearth) and the
+     mountain silhouette fully in frame, biased slightly high to hold
+     as much of the Milky Way's arc as a cover-fit crop allows. The
+     image itself is set inline by FinalCTA.jsx (admin-editable, with
+     the stargazing plate as its fallback) at every width — this rule
+     no longer pins its own background-image, since a stylesheet
+     !important here would silently defeat any published custom image
+     on desktop while leaving mobile/tablet (below) working correctly. */
   .cta-bg {
-    background-image: url('/images/timeline_stargazing.webp') !important;
     background-position: center 62%;
     /* A light blur reads as atmosphere without turning the
        starfield to fog — the stars need to stay pinpoints. */

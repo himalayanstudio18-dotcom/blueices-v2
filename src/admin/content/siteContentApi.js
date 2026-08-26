@@ -2,6 +2,21 @@ import { supabase } from '../../lib/supabaseClient';
 
 const COLUMNS = 'section_key, value_en, value_bn, draft_value_en, draft_value_bn';
 
+/* Reuses the existing 'gallery' Storage bucket (already public-read,
+   already RLS-gated to owner/manager/editor for writes — see
+   supabase/migrations/0007_staff_roles_rls.sql) under its own
+   site-content/<sectionKey>/ prefix, so these images never appear in
+   the Gallery admin's photo grid (that grid is driven by rows in
+   gallery_images, which this never inserts into — it only stores a
+   plain public URL string, same as the existing hero_image text
+   field). No new bucket, no new RLS. */
+export async function uploadSiteContentImage(file, sectionKey) {
+  const path = `site-content/${sectionKey}/${crypto.randomUUID()}-${file.name}`;
+  const { error: uploadError } = await supabase.storage.from('gallery').upload(path, file);
+  if (uploadError) throw uploadError;
+  return supabase.storage.from('gallery').getPublicUrl(path).data.publicUrl;
+}
+
 export async function listSiteContent(page) {
   const { data, error } = await supabase
     .from('site_content')

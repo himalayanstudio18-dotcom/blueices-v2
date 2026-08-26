@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES, SECTIONS } from './sectionConfig';
-import { listSiteContent, saveDraftContent, publishAllDrafts, revertAllDrafts } from './siteContentApi';
+import { listSiteContent, saveDraftContent, publishAllDrafts, revertAllDrafts, uploadSiteContentImage } from './siteContentApi';
 import { useAdminAuth } from '../AdminAuthContext';
 import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
@@ -18,6 +18,7 @@ export default function SiteContentPage() {
   const [error, setError] = useState('');
   const [savedKey, setSavedKey] = useState(null);
   const [publishing, setPublishing] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState(null);
 
   const load = useCallback(async () => {
     setContent(null);
@@ -48,6 +49,23 @@ export default function SiteContentPage() {
       const friendly = friendlyError(err, 'save this change');
       setError(friendly);
       showToast({ type: 'error', title: 'Save failed', message: friendly });
+    }
+  }
+
+  /* Uploads go through the same draft path as every other field —
+     save() below only ever writes draft_value_en, so the live image
+     is untouched until Publish, exactly like a typed hero_image URL. */
+  async function handleImageUpload(sectionKey, file, previousValue) {
+    setUploadingKey(sectionKey);
+    try {
+      const url = await uploadSiteContentImage(file, sectionKey);
+      await save(sectionKey, { value_en: url, value_bn: null }, previousValue);
+    } catch (err) {
+      const friendly = friendlyError(err, 'upload this image');
+      setError(friendly);
+      showToast({ type: 'error', title: 'Upload failed', message: friendly });
+    } finally {
+      setUploadingKey(null);
     }
   }
 
@@ -149,30 +167,55 @@ export default function SiteContentPage() {
                 {isDraft && <span className="admin-badge is-draft">Draft</span>}
                 {savedKey === s.key && <span className="admin-content-saved">Draft saved</span>}
               </div>
-              <div className={s.bilingual ? 'admin-form-grid' : undefined}>
-                <label className="admin-field">
-                  <span>{s.bilingual ? 'English' : 'Value'}</span>
-                  <InputTag
-                    {...(s.type === 'textarea' ? { rows: 3 } : {})}
-                    defaultValue={shownEn}
-                    key={`${s.key}-en-${shownEn}`}
-                    disabled={!canEditPage}
-                    onBlur={(e) => e.target.value !== shownEn && save(s.key, { value_en: e.target.value, value_bn: shownBn || null }, shownEn)}
-                  />
-                </label>
-                {s.bilingual && (
+              {s.description && <p className="admin-placeholder-note">{s.description}</p>}
+              {s.type === 'image' ? (
+                <div className="admin-image-grid">
+                  <div className="admin-image-card">
+                    <img src={shownEn || s.defaultUrl} alt="" />
+                  </div>
+                </div>
+              ) : (
+                <div className={s.bilingual ? 'admin-form-grid' : undefined}>
                   <label className="admin-field">
-                    <span>Bengali</span>
+                    <span>{s.bilingual ? 'English' : 'Value'}</span>
                     <InputTag
                       {...(s.type === 'textarea' ? { rows: 3 } : {})}
-                      defaultValue={shownBn}
-                      key={`${s.key}-bn-${shownBn}`}
+                      defaultValue={shownEn}
+                      key={`${s.key}-en-${shownEn}`}
                       disabled={!canEditPage}
-                      onBlur={(e) => e.target.value !== shownBn && save(s.key, { value_en: shownEn || null, value_bn: e.target.value }, shownBn)}
+                      onBlur={(e) => e.target.value !== shownEn && save(s.key, { value_en: e.target.value, value_bn: shownBn || null }, shownEn)}
                     />
                   </label>
-                )}
-              </div>
+                  {s.bilingual && (
+                    <label className="admin-field">
+                      <span>Bengali</span>
+                      <InputTag
+                        {...(s.type === 'textarea' ? { rows: 3 } : {})}
+                        defaultValue={shownBn}
+                        key={`${s.key}-bn-${shownBn}`}
+                        disabled={!canEditPage}
+                        onBlur={(e) => e.target.value !== shownBn && save(s.key, { value_en: shownEn || null, value_bn: e.target.value }, shownBn)}
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+              {s.type === 'image' && canEditPage && (
+                <label className="admin-btn-primary admin-btn-link admin-upload-btn">
+                  {uploadingKey === s.key ? 'Uploading…' : shownEn ? 'Change Image' : 'Upload Image'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    disabled={uploadingKey === s.key}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = '';
+                      if (file) handleImageUpload(s.key, file, shownEn);
+                    }}
+                  />
+                </label>
+              )}
             </div>
           );
         })}
