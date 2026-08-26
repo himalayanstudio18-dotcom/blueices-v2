@@ -19,6 +19,13 @@ export const SECTIONS = {
     { key: 'hero_cta_link', label: 'Hero CTA Link', type: 'text', bilingual: false },
     { key: 'hero_image', label: 'Hero Image URL', type: 'text', bilingual: false },
     {
+      key: 'homepage_video_embed_url',
+      label: 'Homepage Video',
+      type: 'embed',
+      bilingual: false,
+      description: 'Embed URL for the video shown immediately below the Hero section, before "Slow Down. You’ve Reached the Ridge." Visitors see a poster image with a play button until they click — the video itself never loads until then. Leave blank to hide the section entirely.',
+    },
+    {
       key: 'final_cta_background_image',
       label: 'Final CTA Background Image',
       type: 'image',

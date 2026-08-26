@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SunIcon, FireIcon, LeafIcon, WaterIcon, ElevationIcon } from './Icons';
+import { SunIcon, FireIcon, LeafIcon, WaterIcon, ElevationIcon, PlayIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 import { photos, galleryPhotos } from '../assets/photos';
+import { useSiteContent } from '../lib/useSiteContent';
 
 const expIcons = [
   <SunIcon key="sun" size={20} color="var(--amber-light)" />,
@@ -30,6 +31,65 @@ const expImages = [
 
 /* Gallery now draws from real property photography */
 const galleryImages = galleryPhotos;
+
+/* Best-effort: appends autoplay=1 so the click that reveals the
+   iframe also starts playback immediately — YouTube/Vimeo both honor
+   this query param. Never blocks rendering if the URL is malformed
+   for any reason; the raw admin-provided URL is used as-is instead,
+   and the provider's own player still offers a play button. */
+function withAutoplay(url) {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.searchParams.has('autoplay')) parsed.searchParams.set('autoplay', '1');
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+/* Click-to-play facade: nothing from the video provider (iframe,
+   player script, network request) loads until the visitor clicks —
+   only a static poster photo. The click is also the "intentional
+   interaction" that lets the resulting embed autoplay with audio
+   without fighting the browser's autoplay-with-sound policy. Renders
+   nothing at all if no embed URL has been published (no admin
+   default like final_cta_background_image has — an unconfigured
+   video simply isn't part of the page yet). */
+export function HomeVideoTeaser() {
+  const { lang } = useLanguage();
+  const { get } = useSiteContent('home', lang);
+  const [playing, setPlaying] = useState(false);
+  const embedUrl = get('homepage_video_embed_url', '');
+
+  if (!embedUrl) return null;
+
+  return (
+    <section className="home-video-section" aria-label="Homestay Video">
+      <div className="section-inner" data-reveal="fade-up">
+        <div className="video-frame">
+          {playing ? (
+            <iframe
+              className="video-iframe"
+              src={withAutoplay(embedUrl)}
+              title="Lakhey Lachen Homestay video"
+              loading="lazy"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label="Play video">
+              <img src={photos.videoPoster} alt="" className="video-poster" loading="lazy" />
+              <span className="video-facade-overlay" aria-hidden="true"></span>
+              <span className="video-play-btn" aria-hidden="true">
+                <PlayIcon size={26} color="var(--ink)" />
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function HomeWelcomeTeaser() {
   const { lang } = useLanguage();

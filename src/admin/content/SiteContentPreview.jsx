@@ -5,6 +5,7 @@ import { listSiteContent, publishAllDrafts, revertAllDrafts } from './siteConten
 import { SiteContentPreviewProvider } from '../../lib/useSiteContent';
 import { LanguageProvider, useLanguage } from '../../context/LanguageContext';
 import Hero from '../../components/Hero';
+import { HomeVideoTeaser } from '../../components/HomeTeasers';
 import FinalCTA from '../../components/FinalCTA';
 import Introduction from '../../components/Introduction';
 import ExperiencesHero from '../../components/ExperiencesHero';
@@ -20,12 +21,13 @@ import { canPublish } from '../permissions';
    'contact'/'stays' pages currently only carry SEO meta fields
    (title/description), which have no visible on-page representation
    to render; those get a plain text summary instead. */
-/* home renders both Hero and FinalCTA — FinalCTA's background image
-   field lives under the Homepage tab (see sectionConfig.js), even
-   though the component itself also appears on the public Stays page,
-   so its draft needs to be visible here too. */
+/* home renders Hero, HomeVideoTeaser, and FinalCTA — all three read
+   Homepage-tab site_content fields (hero_image, homepage_video_embed_url,
+   final_cta_background_image respectively), even though FinalCTA also
+   appears on the public Stays page, so every one of their drafts needs
+   to be visible here. */
 const VISUAL_PREVIEW = {
-  home: () => <><Hero /><FinalCTA /></>,
+  home: () => <><Hero /><HomeVideoTeaser /><FinalCTA /></>,
   story: () => <Introduction />,
   experiences: () => <ExperiencesHero />,
   policies: () => <PoliciesBox />,

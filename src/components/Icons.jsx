@@ -187,3 +187,9 @@ export const TrainIcon = ({ size = 18, color = 'currentColor' }) => (
     <path d="M16 19l2 2" />
   </svg>
 );
+
+export const PlayIcon = ({ size = 22, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke="none" aria-hidden="true" style={{ verticalAlign: 'middle', display: 'inline-block' }}>
+    <path d="M8 5v14l11-7-11-7z" />
+  </svg>
+);

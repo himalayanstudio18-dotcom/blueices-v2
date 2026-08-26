@@ -91,6 +91,12 @@ export const photos = {
      supporting thumbnail. Deliberately not `landscape` (the single
      outside images/ photo), which is already the homepage hero. */
   promiseAccent: galleryDuskExteriorA,
+
+  /* Homepage video poster (click-to-play facade). Not `valley`/
+     `arrival` (used immediately below by the Welcome section) or
+     `promiseAccent` (used further down by Why) — kept visually
+     distinct from its neighbors. */
+  videoPoster: galleryMountainView,
 };
 
 /* Room detail-modal galleries (Stay page) — each room's cover photo

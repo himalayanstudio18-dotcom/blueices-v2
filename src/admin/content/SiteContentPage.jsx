@@ -8,6 +8,18 @@ import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can, canPublish } from '../permissions';
 
+/* Deliberately provider-agnostic (no host allowlist, unlike Settings'
+   google_maps_embed_url validator) — this field accepts any video
+   embed provider's URL, not just one. Blank is valid: it means "no
+   video configured," and the public section simply doesn't render. */
+function validateEmbedUrl(value) {
+  if (!value) return null;
+  let url;
+  try { url = new URL(value); } catch { return 'Enter a valid embed URL (starting with https://).'; }
+  if (url.protocol !== 'https:') return 'Embed URL must use https://.';
+  return null;
+}
+
 export default function SiteContentPage() {
   const { staff, role } = useAdminAuth();
   const { showToast } = useToast();
@@ -19,6 +31,8 @@ export default function SiteContentPage() {
   const [savedKey, setSavedKey] = useState(null);
   const [publishing, setPublishing] = useState(false);
   const [uploadingKey, setUploadingKey] = useState(null);
+  const [previewKey, setPreviewKey] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const load = useCallback(async () => {
     setContent(null);
@@ -173,6 +187,43 @@ export default function SiteContentPage() {
                   <div className="admin-image-card">
                     <img src={shownEn || s.defaultUrl} alt="" />
                   </div>
+                </div>
+              ) : s.type === 'embed' ? (
+                <div className="admin-embed-field">
+                  <label className="admin-field">
+                    <span>Embed URL</span>
+                    <input
+                      type="text"
+                      placeholder="https://www.youtube.com/embed/… or https://player.vimeo.com/video/…"
+                      defaultValue={shownEn}
+                      key={`${s.key}-en-${shownEn}`}
+                      disabled={!canEditPage}
+                      onBlur={(e) => {
+                        const value = e.target.value.trim();
+                        if (value === shownEn) return;
+                        const validationError = validateEmbedUrl(value);
+                        setFieldErrors((f) => ({ ...f, [s.key]: validationError }));
+                        if (validationError) return;
+                        save(s.key, { value_en: value || null, value_bn: null }, shownEn);
+                      }}
+                    />
+                  </label>
+                  {fieldErrors[s.key] && <p className="admin-auth-error">{fieldErrors[s.key]}</p>}
+                  <button
+                    type="button"
+                    className="admin-btn-ghost"
+                    onClick={() => setPreviewKey((k) => (k === s.key ? null : s.key))}
+                    disabled={!shownEn}
+                  >
+                    {previewKey === s.key ? 'Hide Preview' : 'Preview Embed'}
+                  </button>
+                  {previewKey === s.key && shownEn && (
+                    <div className="admin-embed-preview">
+                      <div className="admin-embed-preview-frame">
+                        <iframe src={shownEn} title="Embed preview" loading="lazy" allowFullScreen />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className={s.bilingual ? 'admin-form-grid' : undefined}>

@@ -5840,6 +5840,108 @@ section + section {
 }
 
 /* ─── HOMEPAGE TEASER STYLES ──────────────────────────────────────── */
+
+/* Sits between the Hero and .home-welcome-section — bg-dark matches
+   the Welcome section immediately below so the two read as one
+   continuous surface, with the Hero's own edge-to-edge photo above
+   providing the only real seam. Bottom padding stays modest since
+   .home-welcome-section already supplies its own generous top
+   padding; stacking both would read as too much empty space. */
+.home-video-section {
+  padding: clamp(3rem, 6vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--bg-dark);
+}
+
+/* Same rounded-frame language as .hw-image-card just below (24px
+   radius, amber-tinted hairline border, soft dark shadow) — a 16:9
+   video reuses the site's existing "framed photo" treatment rather
+   than introducing a new container style. */
+.video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(201,133,58,0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  background: var(--ink);
+}
+
+.video-facade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  display: block;
+}
+
+.video-facade:focus-visible {
+  outline: 2px solid var(--amber-light);
+  outline-offset: 3px;
+}
+
+.video-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Same dark-ink/amber color language as .rc-img-overlay, reshaped as
+   a centered radial (rather than a bottom fade) so the play button
+   sitting in the middle keeps contrast against any poster photo. */
+.video-facade-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(14,10,5,0.15) 0%, rgba(14,10,5,0.5) 100%),
+    linear-gradient(200deg, rgba(232,169,92,0.1) 0%, transparent 45%);
+}
+
+/* Same gradient + shadow + hover-lift language as .btn-warm, applied
+   to a circle instead of a pill. */
+.video-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(64px, 10vw, 80px);
+  height: clamp(64px, 10vw, 80px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber) 0%, var(--amber-light) 100%);
+  box-shadow: 0 6px 28px rgba(201,133,58,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s var(--ease-expo), box-shadow 0.4s ease;
+}
+
+.video-play-btn svg {
+  /* Optical centering nudge for the play triangle's off-axis shape. */
+  transform: translateX(2px);
+}
+
+.video-facade:hover .video-play-btn,
+.video-facade:focus-visible .video-play-btn {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 12px 40px rgba(201,133,58,0.55);
+}
+
+.video-facade:active .video-play-btn {
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+.video-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
 .home-welcome-section {
   position: relative;
   padding: clamp(4rem, 8vw, 7rem) 0;
