@@ -11,13 +11,13 @@
   <meta property="og:description" content="A family homestay in Munsong's hidden Himalayas. 3,800 ft elevation. Kanchenjunga views. Authentic warmth." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- The desktop hero photograph is the largest contentful paint, but
-       it is attached from CSS, so the browser only discovers it after
-       the stylesheet parses. Preloading wins that round trip back.
-       media= keeps phones out of it entirely: below 1025px the hero
-       shows a different picture and this one is never rendered. -->
-  <link rel="preload" as="image" href="/images/hero_himalayan_sunrise.webp"
-        media="(min-width: 1025px)" fetchpriority="high" />
+  <!-- The hero image preload used to live here as a static tag, but
+       index.html is the shared shell for every route in this SPA, so
+       it was being fetched (and flagged "preloaded but not used") on
+       every non-Home page too. It's now injected only while Hero.jsx
+       is mounted — see src/lib/usePreloadImage.js — so the same
+       early-discovery win applies only where the image is actually
+       used. -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Hind+Siliguri:wght@300;400;500;600&family=Noto+Serif+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body data-atmos="dawn">

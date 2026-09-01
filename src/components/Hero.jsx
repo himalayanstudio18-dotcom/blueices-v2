@@ -6,6 +6,7 @@ import t from '../translations';
 import { useSiteContent } from '../lib/useSiteContent';
 import { useSettings } from '../lib/useSettings';
 import { normalizeWhatsAppNumber } from '../lib/phone';
+import { usePreloadImage } from '../lib/usePreloadImage';
 
 export default function Hero() {
   const { lang } = useLanguage();
@@ -18,6 +19,14 @@ export default function Hero() {
   const phone = settings?.phone || '+919804974595';
 
   const heroImage = get('hero_image', '/images/hero_himalayan_sunrise.webp');
+  /* This is the page's largest contentful paint, and it's only ever
+     applied via an inline style after React renders, so a preload
+     wins the round trip back versus waiting for JS to mount this
+     component. Scoped to min-width:1025px to match the desktop-hero
+     media query this same preload used when it lived as a static tag
+     in index.html — kept here, not widened, since that's an existing
+     design decision this fix isn't meant to revisit. */
+  usePreloadImage(heroImage, { media: '(min-width: 1025px)' });
   const heroHeading = get('hero_heading', null);
   const heroSub = get('hero_subtitle', tx.sub);
   const ctaText = get('hero_cta_text', tx.cta1);

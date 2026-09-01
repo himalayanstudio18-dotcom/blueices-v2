@@ -54,33 +54,33 @@ export default function InquiryForm() {
           ) : (
             <form className="inquiry-form" onSubmit={handleSubmit} noValidate>
               <div className="inquiry-form-grid">
-                <label className="inquiry-field">
+                <label className="inquiry-field" htmlFor="inquiry-full-name">
                   <span>{tx.labelName}</span>
-                  <input value={form.name} onChange={(e) => set('name', e.target.value)} required />
+                  <input id="inquiry-full-name" name="fullName" value={form.name} onChange={(e) => set('name', e.target.value)} required />
                 </label>
-                <label className="inquiry-field">
+                <label className="inquiry-field" htmlFor="inquiry-phone-number">
                   <span>{tx.labelPhone}</span>
-                  <input type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} />
+                  <input id="inquiry-phone-number" name="phoneNumber" type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} />
                 </label>
-                <label className="inquiry-field">
+                <label className="inquiry-field" htmlFor="inquiry-email">
                   <span>{tx.labelEmail}</span>
-                  <input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} />
+                  <input id="inquiry-email" name="email" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} />
                 </label>
-                <label className="inquiry-field">
+                <label className="inquiry-field" htmlFor="inquiry-guests">
                   <span>{tx.labelGuests}</span>
-                  <input type="number" min="1" value={form.guests} onChange={(e) => set('guests', e.target.value)} />
+                  <input id="inquiry-guests" name="guests" type="number" min="1" value={form.guests} onChange={(e) => set('guests', e.target.value)} />
                 </label>
-                <label className="inquiry-field">
+                <label className="inquiry-field" htmlFor="inquiry-check-in">
                   <span>{tx.labelCheckIn}</span>
-                  <input type="date" value={form.checkIn} onChange={(e) => set('checkIn', e.target.value)} />
+                  <input id="inquiry-check-in" name="checkIn" type="date" value={form.checkIn} onChange={(e) => set('checkIn', e.target.value)} />
                 </label>
-                <label className="inquiry-field">
+                <label className="inquiry-field" htmlFor="inquiry-check-out">
                   <span>{tx.labelCheckOut}</span>
-                  <input type="date" value={form.checkOut} onChange={(e) => set('checkOut', e.target.value)} />
+                  <input id="inquiry-check-out" name="checkOut" type="date" value={form.checkOut} onChange={(e) => set('checkOut', e.target.value)} />
                 </label>
-                <label className="inquiry-field inquiry-field--wide">
+                <label className="inquiry-field inquiry-field--wide" htmlFor="inquiry-preferred-room">
                   <span>{tx.labelRoom}</span>
-                  <select value={form.preferredRoomId} onChange={(e) => set('preferredRoomId', e.target.value)}>
+                  <select id="inquiry-preferred-room" name="preferredRoom" value={form.preferredRoomId} onChange={(e) => set('preferredRoomId', e.target.value)}>
                     <option value="">{tx.roomAny}</option>
                     {rooms?.map((room) => (
                       <option key={room.id} value={room.id}>{room.name}</option>
@@ -89,9 +89,9 @@ export default function InquiryForm() {
                 </label>
               </div>
 
-              <label className="inquiry-field">
+              <label className="inquiry-field" htmlFor="inquiry-message">
                 <span>{tx.labelMessage}</span>
-                <textarea rows={4} value={form.message} onChange={(e) => set('message', e.target.value)} placeholder={tx.messagePlaceholder} />
+                <textarea id="inquiry-message" name="message" rows={4} value={form.message} onChange={(e) => set('message', e.target.value)} placeholder={tx.messagePlaceholder} />
               </label>
 
               {fieldError && <p className="inquiry-form-feedback inquiry-form-feedback--error" role="alert">{fieldError}</p>}
