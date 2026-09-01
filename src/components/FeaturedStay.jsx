@@ -4,6 +4,8 @@ import { KitchenIcon, ElevationIcon, FireIcon, WifiIcon, CarIcon, TeaIcon } from
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 import { usePublishedRooms } from '../lib/usePublishedRooms';
+import { useSettings } from '../lib/useSettings';
+import { buildRoomReservationMessage, buildWhatsAppUrl } from '../lib/phone';
 import RoomDetailsModal from './RoomDetailsModal';
 
 const amenityIcons = [
@@ -20,6 +22,8 @@ export default function FeaturedStay() {
   const tx = t[lang].featuredStay;
   const [openRoom, setOpenRoom] = useState(null);
   const { rooms, loading, error } = usePublishedRooms(lang);
+  const settings = useSettings();
+  const whatsappNumber = settings?.whatsapp || '919804974595';
 
   const handleCardKeyDown = (e, i) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -73,9 +77,16 @@ export default function FeaturedStay() {
                 </div>
                 <p className="rc-desc">{room.shortDesc}</p>
                 {room.isAvailable ? (
-                  <Link to="/contact" className="btn-warm rc-btn" onClick={(e) => e.stopPropagation()}>
+                  <a
+                    href={buildWhatsAppUrl(whatsappNumber, buildRoomReservationMessage(room.name))}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-warm rc-btn"
+                    aria-label={`Reserve ${room.name} via WhatsApp`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {tx.ctaCard}
-                  </Link>
+                  </a>
                 ) : (
                   <span className="btn-warm rc-btn rc-btn--disabled" aria-disabled="true" onClick={(e) => e.stopPropagation()}>
                     Currently Unavailable
@@ -109,6 +120,7 @@ export default function FeaturedStay() {
           key={rooms[openRoom].id}
           room={rooms[openRoom]}
           ctaLabel={tx.ctaCard}
+          whatsappNumber={whatsappNumber}
           onClose={() => setOpenRoom(null)}
         />
       )}
