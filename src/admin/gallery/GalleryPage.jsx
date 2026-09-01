@@ -10,7 +10,14 @@ import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can } from '../permissions';
 
-const CATEGORIES = ['exterior', 'interior', 'nature', 'room'];
+const GALLERY_CATEGORIES = ['exterior', 'interior', 'nature', 'room'];
+const DINING_CATEGORIES = ['breakfast', 'lunch', 'dinner', 'local_cuisine', 'tea_snacks'];
+const CATEGORY_LABELS = {
+  exterior: 'Exterior', interior: 'Interior', nature: 'Nature', room: 'Room',
+  breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner',
+  local_cuisine: 'Local Cuisine', tea_snacks: 'Tea & Snacks',
+};
+const categoryLabel = (cat) => CATEGORY_LABELS[cat] ?? cat;
 
 export default function GalleryPage() {
   const { staff, role } = useAdminAuth();
@@ -25,6 +32,8 @@ export default function GalleryPage() {
   const [uploading, setUploading] = useState(false);
   const [busyId, setBusyId] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [section, setSection] = useState('gallery');
+  const categories = section === 'dining' ? DINING_CATEGORIES : GALLERY_CATEGORIES;
 
   async function load() {
     try {
@@ -43,7 +52,7 @@ export default function GalleryPage() {
     setUploading(true);
     setError('');
     try {
-      await uploadGalleryImages(files);
+      await uploadGalleryImages(files, section);
       logActivity(staff, { action: 'upload', entity: 'gallery_image', detail: `${files.length} photo${files.length > 1 ? 's' : ''} uploaded` });
       showToast({
         type: 'success',
@@ -150,14 +159,20 @@ export default function GalleryPage() {
     await setGalleryOrder(next);
   }
 
-  const visible = images?.filter((img) => filter === 'all' || img.category === filter) ?? [];
+  const inSection = images?.filter((img) => img.section === section) ?? [];
+  const visible = inSection.filter((img) => filter === 'all' || img.category === filter);
+
+  function switchSection(next) {
+    setSection(next);
+    setFilter('all');
+  }
 
   return (
     <div className="admin-page">
       <header className="admin-page-header admin-page-header--row">
         <div>
-          <p className="admin-eyebrow">Gallery</p>
-          <h1>Manage Gallery</h1>
+          <p className="admin-eyebrow">{section === 'dining' ? 'Dining' : 'Gallery'}</p>
+          <h1>Manage {section === 'dining' ? 'Dining Photos' : 'Gallery'}</h1>
         </div>
         {canUpload && (
           <label className="admin-btn-primary admin-btn-link admin-upload-btn">
@@ -172,26 +187,43 @@ export default function GalleryPage() {
       <div className="admin-filter-tabs">
         <button
           type="button"
+          className={`admin-filter-tab${section === 'gallery' ? ' is-active' : ''}`}
+          onClick={() => switchSection('gallery')}
+        >
+          Gallery ({images?.filter((i) => i.section === 'gallery').length ?? 0})
+        </button>
+        <button
+          type="button"
+          className={`admin-filter-tab${section === 'dining' ? ' is-active' : ''}`}
+          onClick={() => switchSection('dining')}
+        >
+          Dining ({images?.filter((i) => i.section === 'dining').length ?? 0})
+        </button>
+      </div>
+
+      <div className="admin-filter-tabs">
+        <button
+          type="button"
           className={`admin-filter-tab${filter === 'all' ? ' is-active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All ({images?.length ?? 0})
+          All ({inSection.length})
         </button>
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
             type="button"
             className={`admin-filter-tab${filter === cat ? ' is-active' : ''}`}
             onClick={() => setFilter(cat)}
           >
-            {cat[0].toUpperCase() + cat.slice(1)} ({images?.filter((i) => i.category === cat).length ?? 0})
+            {categoryLabel(cat)} ({inSection.filter((i) => i.category === cat).length})
           </button>
         ))}
       </div>
 
       {images === null && !error && <p>Loading…</p>}
-      {images?.length === 0 && <p>No photos yet — upload your first one.</p>}
-      {images?.length > 0 && visible.length === 0 && <p>No photos in this category.</p>}
+      {images !== null && inSection.length === 0 && <p>No {section === 'dining' ? 'dining ' : ''}photos yet — upload your first one.</p>}
+      {inSection.length > 0 && visible.length === 0 && <p>No photos in this category.</p>}
 
       <div className="admin-gallery-grid">
         {visible.map((img) => {
@@ -201,7 +233,7 @@ export default function GalleryPage() {
           const shownCaptionEn = hasDraft && 'caption_en' in draft ? draft.caption_en : img.caption_en;
           const shownCaptionBn = hasDraft && 'caption_bn' in draft ? draft.caption_bn : img.caption_bn;
           const shownAltEn = hasDraft && 'alt_text_en' in draft ? draft.alt_text_en : img.alt_text_en;
-          const shownCategory = hasDraft && 'category' in draft ? draft.category : (img.category ?? 'exterior');
+          const shownCategory = hasDraft && 'category' in draft ? draft.category : (img.category ?? categories[0]);
           return (
             <div key={img.id} className="admin-gallery-card">
               <div className="admin-gallery-card-img">
@@ -243,8 +275,8 @@ export default function GalleryPage() {
                 <label className="admin-field">
                   <span>Category</span>
                   <select value={shownCategory} onChange={(e) => handleDraftField(img, 'category', e.target.value)} disabled={!canEdit}>
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat[0].toUpperCase() + cat.slice(1)}</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>{categoryLabel(cat)}</option>
                     ))}
                   </select>
                 </label>

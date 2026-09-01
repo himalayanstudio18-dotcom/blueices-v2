@@ -18,6 +18,7 @@ export function useGalleryImages(lang) {
     supabase
       .from('gallery_images')
       .select('id, storage_path, caption_en, caption_bn, alt_text_en, alt_text_bn, sort_order')
+      .eq('section', 'gallery')
       .eq('is_published', true)
       .order('sort_order')
       .then(({ data, error: err }) => {

@@ -6282,6 +6282,272 @@ section + section {
   line-height: 1.6;
 }
 
+/* ─── HOME DINING TEASER ────────────────────────────────────────
+   Same card chrome (border/radius/shadow/overlay) as .hexp-card just
+   above, so it reads as part of the same editorial language — but a
+   portrait crop and a denser 3-up grid keep it visually distinct from
+   the Experiences cards immediately preceding it, not a repeat. */
+.home-dining-teaser-section {
+  padding: clamp(4rem, 8vw, 7rem) 0;
+  background: var(--bg-dark);
+}
+
+.hd-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+  .hd-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  /* Horizontal, snap-scrollable strip — keeps the section compact on
+     small screens instead of stacking 4–6 tall cards vertically. */
+  .hd-grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-left: calc(-1 * var(--pad-x));
+    margin-right: calc(-1 * var(--pad-x));
+    padding: 0 var(--pad-x) 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hd-card {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+  }
+}
+
+.hd-card {
+  background: rgba(38,26,13,0.5);
+  border: 1px solid rgba(201,133,58,0.18);
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s var(--ease-expo), border-color 0.4s, box-shadow 0.4s;
+}
+
+.hd-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(201,133,58,0.4);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+}
+
+.hd-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.hd-img {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  display: block;
+  transition: transform 1.2s var(--ease-expo);
+}
+
+.hd-card:hover .hd-img {
+  transform: scale(1.07);
+}
+
+.hd-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(18,13,7,0.85) 0%, transparent 55%);
+}
+
+.hd-tag {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--amber-light);
+  background: rgba(18,13,7,0.8);
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  border: 1px solid rgba(201,133,58,0.3);
+  backdrop-filter: blur(8px);
+}
+
+.hd-body {
+  padding: 1.15rem 1.25rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.hd-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(201,133,58,0.12);
+  border: 1px solid rgba(201,133,58,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hd-caption {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--text-bright);
+  line-height: 1.4;
+}
+
+/* ─── DINING PAGE (/dining) ─────────────────────────────────────── */
+.dining-page-header {
+  padding: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(2rem, 4vw, 3rem);
+  background: var(--bg-dark);
+  text-align: center;
+}
+
+.dining-page-header .section-heading {
+  margin-top: 0.75rem;
+}
+
+.dining-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: var(--max-w);
+  margin: 0 auto clamp(2.5rem, 5vw, 3.5rem);
+  padding: 0 var(--pad-x);
+}
+
+.dining-tab {
+  padding: 0.55rem 1.3rem;
+  border-radius: 100px;
+  border: 1px solid rgba(253,250,246,0.22);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: border-color 0.3s, background 0.3s, color 0.3s, transform 0.3s var(--ease-expo);
+}
+
+.dining-tab:hover {
+  border-color: rgba(201,133,58,0.45);
+  color: var(--text-bright);
+}
+
+.dining-tab:focus-visible {
+  outline: 2px solid var(--amber-light);
+  outline-offset: 2px;
+}
+
+.dining-tab:active {
+  transform: translateY(1px);
+}
+
+.dining-tab.is-active {
+  background: linear-gradient(135deg, var(--amber) 0%, var(--amber-light) 100%);
+  border-color: transparent;
+  color: var(--ink);
+}
+
+.dining-section {
+  background: var(--bg-dark);
+  padding-bottom: clamp(4rem, 8vw, 6rem);
+}
+
+.dining-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .dining-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dining-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.dining-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(201,133,58,0.18);
+  background: rgba(38,26,13,0.5);
+  cursor: pointer;
+  transition: transform 0.5s var(--ease-expo), border-color 0.4s, box-shadow 0.4s;
+}
+
+.dining-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(201,133,58,0.4);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.4);
+}
+
+.dining-card:focus-visible {
+  outline: 2px solid var(--amber-light);
+  outline-offset: 3px;
+}
+
+.dining-card:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+.dining-card-img {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  display: block;
+  transition: transform 1s var(--ease-expo);
+}
+
+.dining-card:hover .dining-card-img {
+  transform: scale(1.06);
+}
+
+.dining-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(18,13,7,0.88) 0%, transparent 55%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.1rem;
+}
+
+.dining-card-caption {
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  color: var(--text-bright);
+  line-height: 1.35;
+  text-align: left;
+}
+
+.dining-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 0;
+}
+
 .het-title {
   font-family: var(--font-serif);
   font-size: 1.35rem;

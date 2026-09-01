@@ -13,6 +13,7 @@ import StaysPage from './pages/StaysPage';
 import RoomDetailPage from './pages/RoomDetailPage';
 import ExperiencesPage from './pages/ExperiencesPage';
 import StoryPage from './pages/StoryPage';
+import DiningPage from './pages/DiningPage';
 import ContactPage from './pages/ContactPage';
 
 /* Admin panel is code-split out of the public bundle — visitors
@@ -49,6 +50,7 @@ function AppShell({ mobileOpen, openMobile, closeMobile, lightboxIdx, setLightbo
           <Route path="/rooms/:slug" element={<RoomDetailPage />} />
           <Route path="/experiences" element={<ExperiencesPage />} />
           <Route path="/story"       element={<StoryPage onOpenLightbox={(i, images) => { setLightboxImages(images); setLightboxIdx(i); }} />} />
+          <Route path="/dining"      element={<DiningPage onOpenLightbox={(i, images) => { setLightboxImages(images); setLightboxIdx(i); }} />} />
           <Route path="/contact"     element={<ContactPage />} />
         </Routes>
       </main>

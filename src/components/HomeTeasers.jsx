@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SunIcon, FireIcon, LeafIcon, WaterIcon, ElevationIcon, PlayIcon } from './Icons';
+import { SunIcon, FireIcon, LeafIcon, WaterIcon, ElevationIcon, PlayIcon, KitchenIcon, TeaIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 import { photos, galleryPhotos } from '../assets/photos';
 import { useSiteContent } from '../lib/useSiteContent';
+import { useFeaturedDiningImages } from '../lib/useDiningImages';
 
 const expIcons = [
   <SunIcon key="sun" size={20} color="var(--amber-light)" />,
@@ -173,6 +174,69 @@ export function HomeExperiencesTeaser() {
           <Link to="/experiences" className="btn-warm">
             {tx.cta}
           </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const diningCategoryIcons = {
+  breakfast: <SunIcon key="sun" size={20} color="var(--amber-light)" />,
+  lunch: <LeafIcon key="leaf" size={20} color="var(--amber-light)" />,
+  dinner: <FireIcon key="fire" size={20} color="var(--amber-light)" />,
+  local_cuisine: <KitchenIcon key="kitchen" size={20} color="var(--amber-light)" />,
+  tea_snacks: <TeaIcon key="tea" size={20} color="var(--amber-light)" />,
+};
+
+/* Homepage Dining teaser — 4–6 featured, published Dining photos
+   only (fetched pre-filtered by useFeaturedDiningImages, never the
+   full library). Renders nothing while loading or if the admin
+   hasn't featured any Dining photos yet, same "absent until
+   configured" pattern as HomeVideoTeaser above — an empty section
+   here would just be dead space between two populated ones. */
+export function HomeDiningTeaser() {
+  const { lang } = useLanguage();
+  const tx = t[lang].diningTeaser;
+  const categoryLabels = t[lang].diningCategories;
+  const { photos: diningPhotos, loading } = useFeaturedDiningImages(lang, 6);
+
+  if (loading || !diningPhotos || diningPhotos.length === 0) return null;
+
+  return (
+    <section className="home-dining-teaser-section" aria-label="Dining at Blue Ice">
+      <div className="section-inner">
+        <div className="section-header" data-reveal="fade-up">
+          <p className="eyebrow-warm">{tx.eyebrow}</p>
+          <h2 className="section-heading">
+            {tx.h2line1} <em>{tx.h2line2}</em>
+          </h2>
+          <p className="section-sub">{tx.sub}</p>
+        </div>
+
+        <div className="hd-grid" data-reveal="fade-up">
+          {diningPhotos.map((photo) => (
+            <article key={photo.id} className="hd-card">
+              <div className="hd-img-wrap">
+                <img src={photo.src} alt={photo.alt || photo.caption} className="hd-img" loading="lazy" />
+                <div className="hd-overlay" aria-hidden="true"></div>
+                {categoryLabels[photo.category] && (
+                  <span className="hd-tag">{categoryLabels[photo.category]}</span>
+                )}
+              </div>
+              {(diningCategoryIcons[photo.category] || photo.caption) && (
+                <div className="hd-body">
+                  {diningCategoryIcons[photo.category] && (
+                    <span className="hd-icon">{diningCategoryIcons[photo.category]}</span>
+                  )}
+                  {photo.caption && <p className="hd-caption">{photo.caption}</p>}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <div className="section-cta-row" data-reveal="fade-up">
+          <Link to="/dining" className="btn-warm">{tx.cta}</Link>
         </div>
       </div>
     </section>

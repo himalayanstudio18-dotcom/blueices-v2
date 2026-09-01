@@ -4,6 +4,7 @@ import {
   HomeVideoTeaser,
   HomeWelcomeTeaser,
   HomeExperiencesTeaser,
+  HomeDiningTeaser,
   HomeGalleryStrip,
   HomeWhyTeaser
 } from '../components/HomeTeasers';
@@ -16,6 +17,7 @@ export default function HomePage() {
       <HomeVideoTeaser />
       <HomeWelcomeTeaser />
       <HomeExperiencesTeaser />
+      <HomeDiningTeaser />
       <HomeGalleryStrip />
       <HomeWhyTeaser />
       <FinalCTA />

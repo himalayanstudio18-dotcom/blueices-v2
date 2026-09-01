@@ -2,7 +2,7 @@ import { supabase } from '../../lib/supabaseClient';
 
 const IMAGE_COLUMNS = `
   id, storage_path, caption_en, caption_bn, alt_text_en, alt_text_bn,
-  category, sort_order, is_published, is_featured, draft_data, created_at
+  category, section, sort_order, is_published, is_featured, draft_data, created_at
 `;
 
 export function galleryImagePublicUrl(storagePath) {
@@ -18,7 +18,8 @@ export async function listGalleryImages() {
   return data;
 }
 
-export async function uploadGalleryImages(files) {
+export async function uploadGalleryImages(files, section = 'gallery') {
+  const defaultCategory = section === 'dining' ? 'breakfast' : 'exterior';
   for (const file of files) {
     const path = `${crypto.randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage.from('gallery').upload(path, file);
@@ -26,7 +27,7 @@ export async function uploadGalleryImages(files) {
 
     const { error: insertError } = await supabase
       .from('gallery_images')
-      .insert({ storage_path: path, category: 'exterior', sort_order: 999 });
+      .insert({ storage_path: path, category: defaultCategory, section, sort_order: 999 });
     if (insertError) throw insertError;
   }
 }

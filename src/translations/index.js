@@ -103,6 +103,25 @@ const t = {
       ],
     },
 
+    /* HOME DINING TEASER */
+    diningTeaser: {
+      eyebrow: 'From Our Hearth',
+      h2line1: 'Meals Cooked With',
+      h2line2: 'Mountain Warmth',
+      sub: 'Vegetables from our terrace farm, tea from the garden, and a table that never runs empty.',
+      cta: 'Explore Our Kitchen & Dining →',
+    },
+
+    /* DINING CATEGORIES — shared by the homepage teaser tags and the
+       /dining page's filter tabs */
+    diningCategories: {
+      breakfast: 'Breakfast',
+      lunch: 'Lunch',
+      dinner: 'Dinner',
+      local_cuisine: 'Local Cuisine',
+      tea_snacks: 'Tea & Snacks',
+    },
+
     /* HOME WHY TEASER */
     whyTeaser: {
       eyebrow: 'The Lakhey Promise',
@@ -222,6 +241,15 @@ const t = {
         { title: 'Night Stargazing', detail: 'Clear Sky Nights' },
         { title: 'Hearth Cooking', detail: 'Daily Home Meals' },
       ],
+    },
+
+    /* DINING PAGE */
+    diningPage: {
+      eyebrow: 'From Our Hearth',
+      h1: 'Meals Cooked With Mountain Warmth',
+      sub: 'A farm-to-table kitchen, home-brewed tea, and dishes carried down through generations of hill hospitality.',
+      filterAll: 'All',
+      emptyState: 'No dining photos published yet — check back soon.',
     },
 
     /* STORY PAGE */
@@ -515,6 +543,22 @@ const t = {
         },
       ],
     },
+    /* HOME DINING TEASER */
+    diningTeaser: {
+      eyebrow: 'আমাদের উনুন থেকে',
+      h2line1: 'রান্না হয় এখানে',
+      h2line2: 'পাহাড়ের উষ্ণতায়',
+      sub: 'নিজেদের বাগানের সবজি, বাগানের চা, আর এমন এক টেবিল যা কখনো খালি থাকে না।',
+      cta: 'আমাদের রান্নাঘর ও খাবার দেখুন →',
+    },
+    /* DINING CATEGORIES */
+    diningCategories: {
+      breakfast: 'সকালের নাস্তা',
+      lunch: 'দুপুরের খাবার',
+      dinner: 'রাতের খাবার',
+      local_cuisine: 'স্থানীয় খাবার',
+      tea_snacks: 'চা ও জলখাবার',
+    },
     /* HOME WHY TEASER */
     whyTeaser: {
       eyebrow: 'লাখে লাচেনের প্রতিশ্রুতি',
@@ -677,6 +721,14 @@ const t = {
           detail: 'প্রতিদিনের ঘরোয়া খাবার',
         },
       ],
+    },
+    /* DINING PAGE */
+    diningPage: {
+      eyebrow: 'আমাদের উনুন থেকে',
+      h1: 'রান্না হয় পাহাড়ের উষ্ণতায়',
+      sub: 'খামারের তাজা সবজি, ঘরে ভাজা চা, আর প্রজন্মের পর প্রজন্ম ধরে চলে আসা পাহাড়ি আতিথেয়তার স্বাদ।',
+      filterAll: 'সব',
+      emptyState: 'এখনো কোনো খাবারের ছবি প্রকাশ করা হয়নি — শীঘ্রই আসছে।',
     },
     /* STORY PAGE */
     storyPage: {
