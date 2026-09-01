@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { buildRoomReservationMessage, buildWhatsAppUrl } from '../lib/phone';
 
-export default function RoomDetailsModal({ room, ctaLabel, whatsappNumber, onClose }) {
+export default function RoomDetailsModal({ room, ctaLabel, whatsappNumber, reservationTemplate, onClose }) {
   const [activeImg, setActiveImg] = useState(0);
   const gallery = room.gallery;
   const touchStartX = useRef(null);
@@ -112,7 +112,7 @@ export default function RoomDetailsModal({ room, ctaLabel, whatsappNumber, onClo
             </div>
             {room.isAvailable ? (
               <a
-                href={buildWhatsAppUrl(whatsappNumber, buildRoomReservationMessage(room.name))}
+                href={buildWhatsAppUrl(whatsappNumber, buildRoomReservationMessage(room.name, reservationTemplate))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-warm"

@@ -1,3 +1,5 @@
+import { DEFAULT_ROOM_RESERVATION_TEMPLATE } from '../../lib/phone';
+
 /* Curated, editable regions per page — deliberately not fully
    freeform. Keeps the admin editor simple and keeps every editable
    field mapped to a real, known spot in the public site rather than
@@ -62,6 +64,14 @@ export const SECTIONS = {
     { key: 'seo_description', label: 'SEO Meta Description', type: 'textarea', bilingual: false },
   ],
   stays: [
+    {
+      key: 'whatsapp_room_reservation_message',
+      label: 'Room Reservation WhatsApp Message',
+      type: 'whatsapp-template',
+      bilingual: false,
+      description: 'Sent when a visitor taps "Reserve This Suite" on a room card. Available variable: {{room_name}} — use it to automatically insert the selected room name (wrap it in *asterisks* for WhatsApp bold, e.g. *{{room_name}}*). Leave blank to use the default message below.',
+      defaultValue: DEFAULT_ROOM_RESERVATION_TEMPLATE,
+    },
     { key: 'seo_title', label: 'SEO Meta Title', type: 'text', bilingual: false },
     { key: 'seo_description', label: 'SEO Meta Description', type: 'textarea', bilingual: false },
   ],

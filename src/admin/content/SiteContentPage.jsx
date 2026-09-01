@@ -7,6 +7,13 @@ import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can, canPublish } from '../permissions';
+import { buildRoomReservationMessage } from '../../lib/phone';
+
+/* Admin-only example names for the "Preview Message" room selector on
+   the whatsapp-template field — cosmetic only, never used to build the
+   real reservation URL (that always uses the live room.name from
+   usePublishedRooms(), see FeaturedStay.jsx). */
+const PREVIEW_ROOM_NAMES = ['Siddhi', 'Riddhi', 'Swastik'];
 
 /* Deliberately provider-agnostic (no host allowlist, unlike Settings'
    google_maps_embed_url validator) — this field accepts any video
@@ -33,6 +40,7 @@ export default function SiteContentPage() {
   const [uploadingKey, setUploadingKey] = useState(null);
   const [previewKey, setPreviewKey] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [previewRoomName, setPreviewRoomName] = useState(PREVIEW_ROOM_NAMES[0]);
 
   const load = useCallback(async () => {
     setContent(null);
@@ -222,6 +230,47 @@ export default function SiteContentPage() {
                       <div className="admin-embed-preview-frame">
                         <iframe src={shownEn} title="Embed preview" loading="lazy" allowFullScreen />
                       </div>
+                    </div>
+                  )}
+                </div>
+              ) : s.type === 'whatsapp-template' ? (
+                <div className="admin-embed-field">
+                  <label className="admin-field">
+                    <span>Message Template</span>
+                    <textarea
+                      rows={6}
+                      defaultValue={shownEn || s.defaultValue || ''}
+                      key={`${s.key}-en-${shownEn}`}
+                      disabled={!canEditPage}
+                      onBlur={(e) => {
+                        const current = shownEn || s.defaultValue || '';
+                        if (e.target.value !== current) save(s.key, { value_en: e.target.value, value_bn: null }, current);
+                      }}
+                    />
+                  </label>
+                  <div className="admin-form-grid">
+                    <label className="admin-field">
+                      <span>Preview Room</span>
+                      <select value={previewRoomName} onChange={(e) => setPreviewRoomName(e.target.value)}>
+                        {PREVIEW_ROOM_NAMES.map((name) => <option key={name} value={name}>{name}</option>)}
+                      </select>
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    className="admin-btn-ghost"
+                    onClick={() => setPreviewKey((k) => (k === s.key ? null : s.key))}
+                  >
+                    {previewKey === s.key ? 'Hide Preview' : 'Preview Message'}
+                  </button>
+                  {previewKey === s.key && (
+                    <div className="admin-embed-preview">
+                      <p className="admin-placeholder-note" style={{ marginBottom: '0.5rem' }}>
+                        Exact message sent for the {previewRoomName} room:
+                      </p>
+                      <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>
+                        {buildRoomReservationMessage(previewRoomName, shownEn || s.defaultValue)}
+                      </pre>
                     </div>
                   )}
                 </div>

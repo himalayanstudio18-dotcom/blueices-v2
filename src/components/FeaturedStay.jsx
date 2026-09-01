@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 import { usePublishedRooms } from '../lib/usePublishedRooms';
 import { useSettings } from '../lib/useSettings';
+import { useSiteContent } from '../lib/useSiteContent';
 import { buildRoomReservationMessage, buildWhatsAppUrl } from '../lib/phone';
 import RoomDetailsModal from './RoomDetailsModal';
 
@@ -24,6 +25,8 @@ export default function FeaturedStay() {
   const { rooms, loading, error } = usePublishedRooms(lang);
   const settings = useSettings();
   const whatsappNumber = settings?.whatsapp || '919804974595';
+  const { get } = useSiteContent('stays', lang);
+  const reservationTemplate = get('whatsapp_room_reservation_message', undefined);
 
   const handleCardKeyDown = (e, i) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -78,7 +81,7 @@ export default function FeaturedStay() {
                 <p className="rc-desc">{room.shortDesc}</p>
                 {room.isAvailable ? (
                   <a
-                    href={buildWhatsAppUrl(whatsappNumber, buildRoomReservationMessage(room.name))}
+                    href={buildWhatsAppUrl(whatsappNumber, buildRoomReservationMessage(room.name, reservationTemplate))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-warm rc-btn"
@@ -121,6 +124,7 @@ export default function FeaturedStay() {
           room={rooms[openRoom]}
           ctaLabel={tx.ctaCard}
           whatsappNumber={whatsappNumber}
+          reservationTemplate={reservationTemplate}
           onClose={() => setOpenRoom(null)}
         />
       )}
