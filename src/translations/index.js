@@ -18,6 +18,7 @@ const t = {
       home: 'Home',
       stays: 'Stays',
       experiences: 'Experiences',
+      dining: 'Dining',
       story: 'Our Story',
       contact: 'Contact',
       book: 'Book Your Stay',
@@ -413,6 +414,7 @@ const t = {
         { label: 'Home', sub: 'Welcome \u0026 Overview' },
         { label: 'Stay Collection', sub: 'Suites \u0026 Accommodations' },
         { label: 'Himalayan Experiences', sub: 'Moments \u0026 Excursions' },
+        { label: 'Dining \u0026 Kitchen', sub: 'Meals, Local Flavours \u0026 Tea' },
         { label: 'Our Story \u0026 Legacy', sub: 'Heritage \u0026 Gallery' },
         { label: 'Contact \u0026 Reservations', sub: 'Direct Booking' },
       ],
@@ -434,6 +436,7 @@ const t = {
       home: 'হোম',
       stays: 'থাকার ব্যবস্থা',
       experiences: 'অভিজ্ঞতা',
+      dining: 'ডাইনিং',
       story: 'আমাদের গল্প',
       contact: 'যোগাযোগ',
       book: 'বুক করুন',
@@ -930,6 +933,10 @@ const t = {
         {
           label: 'অভিজ্ঞতা',
           sub: 'পাহাড়ি মুহূর্ত ও ভ্রমণ',
+        },
+        {
+          label: 'ডাইনিং ও রান্নাঘর',
+          sub: 'খাবার, স্থানীয় স্বাদ ও চা',
         },
         {
           label: 'আমাদের গল্প',

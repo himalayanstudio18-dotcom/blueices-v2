@@ -26,6 +26,7 @@ export default function Navbar({ onOpenMobile }) {
           <li><NavLink to="/"            end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>{tx.home}</NavLink></li>
           <li><NavLink to="/stays"           className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>{tx.stays}</NavLink></li>
           <li><NavLink to="/experiences"     className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>{tx.experiences}</NavLink></li>
+          <li><NavLink to="/dining"          className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>{tx.dining}</NavLink></li>
           <li><NavLink to="/story"           className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>{tx.story}</NavLink></li>
           <li><NavLink to="/contact"         className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>{tx.contact}</NavLink></li>
         </ul>

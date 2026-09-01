@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import t from '../translations';
 import { brandLogo } from '../assets/photos';
 
-const routes = ['/', '/stays', '/experiences', '/story', '/contact'];
+const routes = ['/', '/stays', '/experiences', '/dining', '/story', '/contact'];
 
 export default function MobileMenu({ onClose }) {
   const { lang, setLang } = useLanguage();
