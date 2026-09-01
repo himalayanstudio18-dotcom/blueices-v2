@@ -150,9 +150,13 @@ export default function GalleryPage() {
   }
 
   async function handleMove(img, dir) {
+    const visIndex = visible.findIndex((i) => i.id === img.id);
+    const swapVisIndex = visIndex + dir;
+    if (swapVisIndex < 0 || swapVisIndex >= visible.length) return;
+    const neighbor = visible[swapVisIndex];
+
     const index = images.findIndex((i) => i.id === img.id);
-    const swapWith = index + dir;
-    if (swapWith < 0 || swapWith >= images.length) return;
+    const swapWith = images.findIndex((i) => i.id === neighbor.id);
     const next = [...images];
     [next[index], next[swapWith]] = [next[swapWith], next[index]];
     setImages(next);
