@@ -18,15 +18,16 @@ export default function Hero() {
   const whatsappNumber = normalizeWhatsAppNumber(settings?.whatsapp || '919804974595');
   const phone = settings?.phone || '+919804974595';
 
-  const heroImage = get('hero_image', '/images/hero_himalayan_sunrise.webp');
-  /* This is the page's largest contentful paint, and it's only ever
-     applied via an inline style after React renders, so a preload
-     wins the round trip back versus waiting for JS to mount this
-     component. Scoped to min-width:1025px to match the desktop-hero
-     media query this same preload used when it lived as a static tag
-     in index.html — kept here, not widened, since that's an existing
-     design decision this fix isn't meant to revisit. */
-  usePreloadImage(heroImage, { media: '(min-width: 1025px)' });
+  const DEFAULT_HERO_IMAGE = '/images/hero_himalayan_sunrise.webp';
+  const heroImage = get('hero_image', DEFAULT_HERO_IMAGE);
+  /* index.html already preloads DEFAULT_HERO_IMAGE synchronously,
+     before this component (or even the JS bundle) exists — see its
+     inline <script>. Re-preloading that same URL here would just
+     start a second, redundant fetch. This hook only needs to fire
+     when an admin has actually overridden the hero image in the CMS,
+     since that URL can't be known until useSiteContent's Supabase
+     fetch resolves. */
+  usePreloadImage(heroImage === DEFAULT_HERO_IMAGE ? null : heroImage, { media: '(min-width: 1025px)' });
   const heroHeading = get('hero_heading', null);
   const heroSub = get('hero_subtitle', tx.sub);
   const ctaText = get('hero_cta_text', tx.cta1);
