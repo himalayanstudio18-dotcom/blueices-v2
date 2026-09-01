@@ -270,7 +270,7 @@ const t = {
       body: 'Here, meals are prepared with vegetables picked fresh from our own organic terrace farm. Conversations unfold over wood-fired tea, and your hosts remember your name, your preferences, and your stories.',
       stat1: '100%', stat1Label: 'Organic Farm Kitchen',
       stat2: '4.9\u2605', stat2Label: 'Guest Hospitality Rating',
-      stat3: '0', stat3Label: 'City Noise \u0026 Traffic',
+      stat3: '0', stat3Label: 'City Noise',
       cta: 'Plan Your Journey \u2192',
       badgeAlt: '3,800', badgeUnit: 'FT',
       badgeLabel: 'Lower Burmaik \u00B7 Munsong',
