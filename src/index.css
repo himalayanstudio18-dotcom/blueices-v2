@@ -6429,6 +6429,19 @@ section + section {
   margin-top: 0.75rem;
 }
 
+/* The shared .section-sub rule gets a desktop-only override further
+   down this file (@media 1025px) that zeroes its centering margins —
+   tuned for two homepage sections that deliberately go left-aligned
+   there. Every other page reusing .section-sub inside the shared
+   .section-header wrapper has its own re-centering override to
+   counteract that; Dining's intro doesn't use that wrapper (see
+   DiningPage.jsx), so it never got one and inherited the left-shift
+   by accident. Re-centered here, scoped to this page only. */
+.dining-page-header .section-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .dining-tabs {
   display: flex;
   flex-wrap: wrap;
