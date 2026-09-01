@@ -511,6 +511,7 @@ button { border: none; background: none; font-family: inherit; }
   display: flex;
   flex-direction: column;
   padding: 1.75rem 1.5rem 2rem 1.5rem;
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* Header bar inside menu */
@@ -578,18 +579,29 @@ button { border: none; background: none; font-family: inherit; }
   transform: rotate(90deg);
 }
 
-/* Navigation List */
+/* Navigation List — scrolls independently of the drawer so the
+   .mm-footer CTA below it always stays on-screen, pinned at the
+   bottom, instead of being pushed past the drawer's clipped edge on
+   short viewports. min-height: 0 lets this flex item shrink below
+   its content size instead of forcing .mobile-menu-content taller
+   than 100%; the list's own auto top/bottom margins (below) center
+   it vertically exactly as justify-content: center did, but — unlike
+   that property — collapse to 0 instead of clipping the top item
+   when the list doesn't fit, so every card stays reachable by scroll. */
 .mm-nav {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mm-nav-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  margin: auto 0;
 }
 
 .mm-nav-item {
