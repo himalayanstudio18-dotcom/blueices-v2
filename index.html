@@ -7,8 +7,41 @@
   <meta name="description" content="Wake above the clouds at Lakhey Lachen Homestay by Blue Ice, nestled in Lower Burmaik, Munsong — a hidden Himalayan retreat where mornings begin in silence." />
   <meta name="theme-color" content="#1A1208" />
   <meta name="keywords" content="Lakhey Lachen Homestay, Munsong, Kalimpong, Himalayan homestay, Blue Ice, Sikkim, mountain retreat" />
-  <meta property="og:title" content="Lakhey Lachen Homestay — Wake Above the Clouds" />
-  <meta property="og:description" content="A family homestay in Munsong's hidden Himalayas. 3,800 ft elevation. Kanchenjunga views. Authentic warmth." />
+
+  <!-- Favicon / brand identity — generated from the existing BlueIce
+       crest (brand assets/Screenshot (7545).png), same mark used in
+       the navbar and footer. Static files under /public so they
+       resolve at these root paths in production without any JS. -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Canonical URL and social/link-preview metadata. VITE_SITE_URL is
+       Vite's built-in HTML env replacement (see .env.production) — it
+       is substituted with a real value at build time, so crawlers get
+       a fully-qualified https:// URL from the static HTML response,
+       no JavaScript required. Update the single VITE_SITE_URL value
+       once the final custom domain is connected; nothing below needs
+       to change. -->
+  <link rel="canonical" href="%VITE_SITE_URL%/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="BlueIce Lakhey Lachen Homestay" />
+  <meta property="og:url" content="%VITE_SITE_URL%/" />
+  <meta property="og:title" content="BlueIce Lakhey Lachen Homestay | Munsong, Kalimpong" />
+  <meta property="og:description" content="A private family homestay in Munsong, Kalimpong — mountain views, home-cooked meals, and the warmth of a Himalayan home." />
+  <meta property="og:image" content="%VITE_SITE_URL%/images/blueice-social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:alt" content="A Himalayan mountain view and BlueIce Lakhey Lachen Homestay in Munsong, Kalimpong" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BlueIce Lakhey Lachen Homestay | Munsong, Kalimpong" />
+  <meta name="twitter:description" content="A private family homestay in Munsong, Kalimpong — mountain views, home-cooked meals, and the warmth of a Himalayan home." />
+  <meta name="twitter:image" content="%VITE_SITE_URL%/images/blueice-social-preview.jpg" />
+  <meta name="twitter:image:alt" content="A Himalayan mountain view and BlueIce Lakhey Lachen Homestay in Munsong, Kalimpong" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- The desktop hero photograph is this route's largest contentful

@@ -16,6 +16,10 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# .env.production holds only the public production site URL (VITE_SITE_URL,
+# used for canonical/Open Graph tags) — not a secret, so it stays tracked as
+# the single place to update once a custom domain is connected in Vercel.
+!.env.production
 
 # Secrets
 supabase credentials.txt
