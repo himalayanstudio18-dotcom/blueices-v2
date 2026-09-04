@@ -280,10 +280,13 @@ export default function SiteContentPage() {
                     <span>{s.bilingual ? 'English' : 'Value'}</span>
                     <InputTag
                       {...(s.type === 'textarea' ? { rows: 3 } : {})}
-                      defaultValue={shownEn}
+                      defaultValue={shownEn || s.defaultValueEn || ''}
                       key={`${s.key}-en-${shownEn}`}
                       disabled={!canEditPage}
-                      onBlur={(e) => e.target.value !== shownEn && save(s.key, { value_en: e.target.value, value_bn: shownBn || null }, shownEn)}
+                      onBlur={(e) => {
+                        const current = shownEn || s.defaultValueEn || '';
+                        if (e.target.value !== current) save(s.key, { value_en: e.target.value, value_bn: shownBn || null }, current);
+                      }}
                     />
                   </label>
                   {s.bilingual && (
@@ -291,10 +294,13 @@ export default function SiteContentPage() {
                       <span>Bengali</span>
                       <InputTag
                         {...(s.type === 'textarea' ? { rows: 3 } : {})}
-                        defaultValue={shownBn}
+                        defaultValue={shownBn || s.defaultValueBn || ''}
                         key={`${s.key}-bn-${shownBn}`}
                         disabled={!canEditPage}
-                        onBlur={(e) => e.target.value !== shownBn && save(s.key, { value_en: shownEn || null, value_bn: e.target.value }, shownBn)}
+                        onBlur={(e) => {
+                          const current = shownBn || s.defaultValueBn || '';
+                          if (e.target.value !== current) save(s.key, { value_en: shownEn || null, value_bn: e.target.value }, current);
+                        }}
                       />
                     </label>
                   )}

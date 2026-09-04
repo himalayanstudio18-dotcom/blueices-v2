@@ -1,4 +1,5 @@
 import { DEFAULT_ROOM_RESERVATION_TEMPLATE } from '../../lib/phone';
+import t from '../../translations';
 
 /* Curated, editable regions per page — deliberately not fully
    freeform. Keeps the admin editor simple and keeps every editable
@@ -20,6 +21,45 @@ export const SECTIONS = {
     { key: 'hero_cta_text', label: 'Hero CTA Text', type: 'text', bilingual: true },
     { key: 'hero_cta_link', label: 'Hero CTA Link', type: 'text', bilingual: false },
     { key: 'hero_image', label: 'Hero Image URL', type: 'text', bilingual: false },
+    {
+      key: 'welcome_eyebrow',
+      label: 'Welcome Eyebrow',
+      type: 'text',
+      bilingual: true,
+      description: 'Small label above the "Slow Down. You’ve Reached the Ridge." heading, just below the homepage video.',
+      // Editor shows the live translation copy until a CMS value is
+      // published for this key, matching the fallback the public
+      // Homepage already applies via useSiteContent's get().
+      defaultValueEn: t.en.welcome.eyebrow,
+      defaultValueBn: t.bn.welcome.eyebrow,
+    },
+    {
+      key: 'welcome_heading_line1',
+      label: 'Welcome Heading Line 1',
+      type: 'text',
+      bilingual: true,
+      description: 'First line of the Welcome section heading (plain text, e.g. "Slow Down.").',
+      defaultValueEn: t.en.welcome.h2line1,
+      defaultValueBn: t.bn.welcome.h2line1,
+    },
+    {
+      key: 'welcome_heading_line2',
+      label: 'Welcome Heading Line 2',
+      type: 'text',
+      bilingual: true,
+      description: 'Second line of the Welcome section heading, rendered italic below Line 1 (e.g. "You’ve Reached the Ridge.").',
+      defaultValueEn: t.en.welcome.h2line2,
+      defaultValueBn: t.bn.welcome.h2line2,
+    },
+    {
+      key: 'welcome_description',
+      label: 'Welcome Description',
+      type: 'textarea',
+      bilingual: true,
+      description: 'Supporting paragraph beneath the Welcome section heading.',
+      defaultValueEn: t.en.welcome.desc,
+      defaultValueBn: t.bn.welcome.desc,
+    },
     {
       key: 'homepage_video_embed_url',
       label: 'Homepage Video',

@@ -95,17 +95,22 @@ export function HomeVideoTeaser() {
 export function HomeWelcomeTeaser() {
   const { lang } = useLanguage();
   const tx = t[lang].welcome;
+  const { get } = useSiteContent('home', lang);
+  const eyebrow = get('welcome_eyebrow', tx.eyebrow);
+  const headingLine1 = get('welcome_heading_line1', tx.h2line1);
+  const headingLine2 = get('welcome_heading_line2', tx.h2line2);
+  const description = get('welcome_description', tx.desc);
 
   return (
     <section className="home-welcome-section">
       <div className="section-inner" data-reveal="fade-up">
         <div className="hw-grid">
           <div className="hw-text">
-            <p className="eyebrow-warm">{tx.eyebrow}</p>
+            <p className="eyebrow-warm">{eyebrow}</p>
             <h2 className="section-heading">
-              {tx.h2line1}<br/><em>{tx.h2line2}</em>
+              {headingLine1}<br/><em>{headingLine2}</em>
             </h2>
-            <p className="hw-desc">{tx.desc}</p>
+            <p className="hw-desc">{description}</p>
             <Link to="/story" className="btn-warm">
               {tx.cta}
             </Link>
