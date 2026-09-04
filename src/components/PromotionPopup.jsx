@@ -5,6 +5,7 @@ import { useSettings } from '../lib/useSettings';
 import { usePopupPromotion } from '../lib/usePromotions';
 import { buildPromotionWhatsAppUrl } from '../lib/promotionMessage';
 import { normalizeWhatsAppNumber } from '../lib/phone';
+import PromoLightbox from './PromoLightbox';
 
 const POPUP_DELAY_MS = 9000; // "wait approximately 8-10 seconds"
 const COOLDOWN_MS = 10 * 60 * 1000; // "default cooldown: 10 minutes"
@@ -104,28 +105,7 @@ export function PromotionPopupView({ promo, lang, whatsappNumber, onClose }) {
       </div>
 
       {hasMedia && lightboxOpen && (
-        <div
-          className="promo-lightbox-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Enlarged promotion image"
-          onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
-        >
-          <button
-            type="button"
-            className="promo-lightbox-close"
-            aria-label="Close enlarged image"
-            onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
-          >
-            ✕
-          </button>
-          <img
-            src={promo.imageUrl}
-            alt={imageAlt}
-            className="promo-lightbox-img"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+        <PromoLightbox imageUrl={promo.imageUrl} alt={imageAlt} onClose={() => setLightboxOpen(false)} />
       )}
     </div>
   );

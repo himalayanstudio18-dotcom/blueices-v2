@@ -9,6 +9,9 @@ import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can } from '../permissions';
+import { validateImageSize } from '../imageValidation';
+
+const GALLERY_IMAGE_MAX_MB = 3;
 
 const GALLERY_CATEGORIES = ['exterior', 'interior', 'nature', 'room'];
 const DINING_CATEGORIES = ['breakfast', 'lunch', 'dinner', 'local_cuisine', 'tea_snacks'];
@@ -49,6 +52,14 @@ export default function GalleryPage() {
   async function handleUpload(e) {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
+    for (const file of files) {
+      const sizeError = validateImageSize(file, GALLERY_IMAGE_MAX_MB);
+      if (sizeError) {
+        showToast({ type: 'error', title: 'Image too large', message: sizeError });
+        e.target.value = '';
+        return;
+      }
+    }
     setUploading(true);
     setError('');
     try {
@@ -185,6 +196,10 @@ export default function GalleryPage() {
           </label>
         )}
       </header>
+
+      {canUpload && (
+        <p className="admin-upload-hint">Recommended: 4:3 · 1600×1200 px · Maximum {GALLERY_IMAGE_MAX_MB} MB · JPG, PNG or WebP</p>
+      )}
 
       {error && <p className="admin-auth-error">{error}</p>}
 

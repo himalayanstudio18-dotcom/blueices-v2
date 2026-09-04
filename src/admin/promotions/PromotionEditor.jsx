@@ -11,6 +11,9 @@ import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can } from '../permissions';
+import { validateImageSize } from '../imageValidation';
+
+const PROMOTION_IMAGE_MAX_MB = 3;
 
 const emptyForm = {
   internal_name: '',
@@ -197,6 +200,12 @@ export default function PromotionEditor() {
   async function handleUpload(e) {
     const file = e.target.files?.[0];
     if (!file) return;
+    const sizeError = validateImageSize(file, PROMOTION_IMAGE_MAX_MB);
+    if (sizeError) {
+      showToast({ type: 'error', title: 'Image too large', message: sizeError });
+      e.target.value = '';
+      return;
+    }
     setUploading(true);
     try {
       const previousPath = form.image_storage_path;
@@ -439,7 +448,8 @@ export default function PromotionEditor() {
       {!isNew && (
         <section className="admin-image-section">
           <h2>Campaign Creative</h2>
-          <p className="admin-placeholder-note">Used as the popup creative and homepage/Stays imagery. Displayed in a 1:1 frame — any ratio is accepted and cropped intelligently, never stretched.</p>
+          <p className="admin-placeholder-note">Used as the popup creative and homepage/Stays imagery. The Popup shows it in a cropped 1:1 frame; the Homepage now shows the complete image, uncropped.</p>
+          <p className="admin-upload-hint">Recommended: 1:1 · 1080×1080 px (or 1200×1200 px) · Best for Homepage &amp; Popup · Maximum {PROMOTION_IMAGE_MAX_MB} MB · JPG, PNG or WebP</p>
 
           {form.image_storage_path ? (
             <div className="admin-image-grid">

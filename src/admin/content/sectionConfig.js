@@ -76,6 +76,8 @@ export const SECTIONS = {
       // Must match FinalCTA.jsx's own hardcoded fallback exactly — shown
       // in the admin preview whenever no custom image has been published yet.
       defaultUrl: '/images/timeline_stargazing.webp',
+      uploadHint: 'Recommended: 16:9 · 1920×1080 px · Maximum 4 MB · JPG, PNG or WebP',
+      maxImageMB: 4,
     },
     { key: 'seo_title', label: 'SEO Meta Title', type: 'text', bilingual: false },
     { key: 'seo_description', label: 'SEO Meta Description', type: 'textarea', bilingual: false },

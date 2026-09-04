@@ -1,27 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSettings } from '../lib/useSettings';
 import { useFeaturedHomePromotion } from '../lib/usePromotions';
 import { buildPromotionWhatsAppUrl } from '../lib/promotionMessage';
 import { normalizeWhatsAppNumber } from '../lib/phone';
+import PromoLightbox from './PromoLightbox';
 
 /* Pure/presentational — takes an already-resolved promo (see
    mapPromotionRow in usePromotions.js) so the admin Preview screen
    can render the exact same markup against a merged draft row,
    guaranteeing preview/live parity. */
 export function HomePromotionSectionView({ promo, lang, whatsappNumber }) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    function onKey(e) { if (e.key === 'Escape') setLightboxOpen(false); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxOpen]);
+
   const waUrl = buildPromotionWhatsAppUrl(promo.raw, lang, whatsappNumber);
   const hasMedia = !!promo.imageUrl;
+  const imageAlt = promo.headline ? `${promo.headline} — promotion image` : 'Promotion image';
 
   return (
     <section className="promo-section" aria-label="Current Promotion">
       <div className="section-inner">
         <div className={`promo-banner${hasMedia ? '' : ' promo-banner--no-media'}`} data-reveal="fade-up">
           {hasMedia && (
-            <div className="promo-media">
-              <img src={promo.imageUrl} alt="" className="promo-media-img" loading="lazy" />
+            <button
+              type="button"
+              className="promo-media promo-media-trigger"
+              aria-label={`View larger image${promo.headline ? `: ${promo.headline}` : ''}`}
+              onClick={() => setLightboxOpen(true)}
+            >
+              <img src={promo.imageUrl} alt={imageAlt} className="promo-media-img" loading="lazy" />
               <span className="promo-media-grade" aria-hidden="true"></span>
-            </div>
+            </button>
           )}
           <div className="promo-info">
             {promo.eyebrow && <p className="eyebrow-warm">{promo.eyebrow}</p>}
@@ -49,6 +65,10 @@ export function HomePromotionSectionView({ promo, lang, whatsappNumber }) {
           </div>
         </div>
       </div>
+
+      {hasMedia && lightboxOpen && (
+        <PromoLightbox imageUrl={promo.imageUrl} alt={imageAlt} onClose={() => setLightboxOpen(false)} />
+      )}
     </section>
   );
 }

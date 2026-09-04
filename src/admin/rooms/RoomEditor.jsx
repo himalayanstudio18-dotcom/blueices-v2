@@ -11,6 +11,9 @@ import { logActivity } from '../activityLogApi';
 import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can, canPublish } from '../permissions';
+import { validateImageSize } from '../imageValidation';
+
+const ROOM_IMAGE_MAX_MB = 3;
 
 const emptyForm = {
   name_en: '', name_bn: '', slug: '', room_type: '',
@@ -224,6 +227,14 @@ export default function RoomEditor() {
   async function handleUpload(e) {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
+    for (const file of files) {
+      const sizeError = validateImageSize(file, ROOM_IMAGE_MAX_MB);
+      if (sizeError) {
+        showToast({ type: 'error', title: 'Image too large', message: sizeError });
+        e.target.value = '';
+        return;
+      }
+    }
     setUploading(true);
     try {
       for (const file of files) await uploadRoomImage(id, file);
@@ -476,6 +487,7 @@ export default function RoomEditor() {
         <section className="admin-image-section">
           <h2>Photos</h2>
           <p className="admin-placeholder-note">First photo (or the one marked cover) is used on the room card.</p>
+          <p className="admin-upload-hint">Recommended: 4:3 · 1600×1200 px · Maximum {ROOM_IMAGE_MAX_MB} MB · JPG, PNG or WebP</p>
 
           <div className="admin-image-grid">
             {images.map((img, i) => (

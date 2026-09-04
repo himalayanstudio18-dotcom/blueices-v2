@@ -8,6 +8,9 @@ import { friendlyError } from '../friendlyError';
 import { useToast, useConfirm } from '../ui/AdminUIProvider';
 import { can, canPublish } from '../permissions';
 import { buildRoomReservationMessage } from '../../lib/phone';
+import { validateImageSize } from '../imageValidation';
+
+const DEFAULT_CONTENT_IMAGE_MAX_MB = 4;
 
 /* Admin-only example names for the "Preview Message" room selector on
    the whatsapp-template field — cosmetic only, never used to build the
@@ -77,7 +80,12 @@ export default function SiteContentPage() {
   /* Uploads go through the same draft path as every other field —
      save() below only ever writes draft_value_en, so the live image
      is untouched until Publish, exactly like a typed hero_image URL. */
-  async function handleImageUpload(sectionKey, file, previousValue) {
+  async function handleImageUpload(sectionKey, file, previousValue, maxMB) {
+    const sizeError = validateImageSize(file, maxMB ?? DEFAULT_CONTENT_IMAGE_MAX_MB);
+    if (sizeError) {
+      showToast({ type: 'error', title: 'Image too large', message: sizeError });
+      return;
+    }
     setUploadingKey(sectionKey);
     try {
       const url = await uploadSiteContentImage(file, sectionKey);
@@ -307,20 +315,23 @@ export default function SiteContentPage() {
                 </div>
               )}
               {s.type === 'image' && canEditPage && (
-                <label className="admin-btn-primary admin-btn-link admin-upload-btn">
-                  {uploadingKey === s.key ? 'Uploading…' : shownEn ? 'Change Image' : 'Upload Image'}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    disabled={uploadingKey === s.key}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      e.target.value = '';
-                      if (file) handleImageUpload(s.key, file, shownEn);
-                    }}
-                  />
-                </label>
+                <>
+                  <label className="admin-btn-primary admin-btn-link admin-upload-btn">
+                    {uploadingKey === s.key ? 'Uploading…' : shownEn ? 'Change Image' : 'Upload Image'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      disabled={uploadingKey === s.key}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = '';
+                        if (file) handleImageUpload(s.key, file, shownEn, s.maxImageMB);
+                      }}
+                    />
+                  </label>
+                  {s.uploadHint && <p className="admin-upload-hint">{s.uploadHint}</p>}
+                </>
               )}
             </div>
           );

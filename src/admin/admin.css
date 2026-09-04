@@ -1228,6 +1228,13 @@
   cursor: pointer;
 }
 
+.admin-upload-hint {
+  font-size: 0.8rem;
+  color: var(--bark);
+  opacity: 0.85;
+  margin: 0.35rem 0 0;
+}
+
 /* ─── Filter tabs (Gallery, Inquiries) ───────────────────────── */
 .admin-filter-tabs {
   display: flex;

@@ -8226,13 +8226,34 @@ section + section {
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
+  background: var(--ink-mid);
 }
 
 .promo-media-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* Campaign creatives are 1:1 posters carrying text/offer content —
+     cover would crop that content on wider frames, so the full
+     original poster is always shown, letterboxed on --ink-mid
+     rather than cropped. */
+  object-fit: contain;
   display: block;
+}
+
+.promo-media-trigger {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.promo-media-trigger:focus-visible {
+  outline: 2px solid var(--amber-light);
+  outline-offset: 2px;
 }
 
 .promo-media-grade {
