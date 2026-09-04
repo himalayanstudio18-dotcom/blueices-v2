@@ -70,6 +70,16 @@ const CAPABILITIES = {
     editor: ['view'], // scope: 'own'
     staff: ['view'], // scope: 'own'
   },
+  // Promotions — same "Full for owner/manager/editor, view-only for
+  // staff" shape as Gallery, but Publish itself is still gated by the
+  // cross-cutting canPublish() below (Owner/Manager only), same as
+  // Rooms/Site Content's draft-preview screen.
+  promotions: {
+    owner: ['view', 'create', 'edit', 'delete', 'duplicate'],
+    manager: ['view', 'create', 'edit', 'delete', 'duplicate'],
+    editor: ['view', 'create', 'edit', 'duplicate'],
+    staff: ['view'],
+  },
 };
 
 // Cross-cutting: can this role hit "Publish Changes" on the Rooms/Site
@@ -129,6 +139,7 @@ export const NAV_ITEMS = [
   { to: '/admin/gallery', label: 'Gallery', section: 'gallery' },
   { to: '/admin/inquiries', label: 'Inquiries', section: 'inquiries' },
   { to: '/admin/content', label: 'Site Content', section: 'content' },
+  { to: '/admin/promotions', label: 'Promotions', section: 'promotions' },
   { to: '/admin/staff', label: 'Staff', section: 'staff' },
   { to: '/admin/activity', label: 'Activity Log', section: 'activity' },
   { to: '/admin/settings', label: 'Settings', section: 'settings' },

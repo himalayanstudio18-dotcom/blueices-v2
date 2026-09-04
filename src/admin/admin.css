@@ -2120,3 +2120,110 @@
   border: 1px solid rgba(74, 52, 34, 0.22);
   resize: vertical;
 }
+
+/* ─── PROMOTIONS ────────────────────────────────────────────────── */
+
+.admin-promo-group {
+  margin-top: 2.25rem;
+}
+
+.admin-promo-group:first-of-type {
+  margin-top: 1.5rem;
+}
+
+.admin-promo-group-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin: 0 0 0.85rem;
+}
+
+.admin-promo-group-count {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--bark);
+}
+
+.admin-form-section-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin: 2rem 0 0.5rem;
+}
+
+.admin-form-section-title:first-child {
+  margin-top: 0;
+}
+
+.admin-benefit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-benefit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.admin-benefit-row input {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(74, 52, 34, 0.22);
+}
+
+.admin-benefit-row-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.admin-benefit-row-actions button {
+  width: 30px;
+  height: 30px;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(74, 52, 34, 0.2);
+  background: #fff;
+  color: var(--bark);
+  cursor: pointer;
+}
+
+.admin-benefit-row-actions button:hover:not(:disabled) {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.admin-benefit-row-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-promo-preview-tabs {
+  margin: 1rem 0 1.5rem;
+}
+
+.admin-promo-popup-stage {
+  position: relative;
+  min-height: 640px;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(18,13,7,0.85);
+}
+
+.admin-promo-popup-stage .promo-popup-backdrop {
+  position: absolute;
+}
+
+@media (max-width: 640px) {
+  .admin-benefit-row {
+    grid-template-columns: 1fr;
+  }
+  .admin-benefit-row-actions {
+    justify-content: flex-end;
+  }
+}

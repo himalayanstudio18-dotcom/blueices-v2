@@ -9,12 +9,14 @@ import {
   HomeWhyTeaser
 } from '../components/HomeTeasers';
 import FinalCTA from '../components/FinalCTA';
+import HomePromotionSection from '../components/HomePromotionSection';
 
 export default function HomePage() {
   return (
     <div className="page-home">
       <Hero />
       <HomeVideoTeaser />
+      <HomePromotionSection />
       <HomeWelcomeTeaser />
       <HomeExperiencesTeaser />
       <HomeDiningTeaser />

@@ -12,6 +12,9 @@ import GalleryPage from './gallery/GalleryPage';
 import InquiriesPage from './inquiries/InquiriesPage';
 import SiteContentPage from './content/SiteContentPage';
 import SiteContentPreview from './content/SiteContentPreview';
+import PromotionsList from './promotions/PromotionsList';
+import PromotionEditor from './promotions/PromotionEditor';
+import PromotionPreview from './promotions/PromotionPreview';
 import StaffPage from './staff/StaffPage';
 import ActivityLogPage from './activity/ActivityLogPage';
 import SettingsPage from './settings/SettingsPage';
@@ -48,6 +51,38 @@ export default function AdminApp() {
             }
           />
           <Route path="content/preview/:page" element={<SiteContentPreview />} />
+          <Route
+            path="promotions"
+            element={
+              <ProtectedRoute section="promotions">
+                <PromotionsList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="promotions/new"
+            element={
+              <ProtectedRoute section="promotions">
+                <PromotionEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="promotions/:id"
+            element={
+              <ProtectedRoute section="promotions">
+                <PromotionEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="promotions/:id/preview"
+            element={
+              <ProtectedRoute section="promotions">
+                <PromotionPreview />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="staff"
             element={

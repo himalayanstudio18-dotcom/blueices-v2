@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import MobileMenu from './components/MobileMenu';
 import Footer from './components/Footer';
 import LightboxModal from './components/LightboxModal';
+import PromotionPopup from './components/PromotionPopup';
 import ScrollToTop from './components/ScrollToTop';
 import { normalizeIndex } from './lib/normalizeIndex';
 
@@ -56,6 +57,8 @@ function AppShell({ mobileOpen, openMobile, closeMobile, lightboxIdx, setLightbo
       </main>
 
       <Footer />
+
+      <PromotionPopup />
 
       {lightboxIdx !== null && (
         <LightboxModal

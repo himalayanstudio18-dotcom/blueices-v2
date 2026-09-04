@@ -64,6 +64,10 @@ export default function AdminDashboard() {
           <span>Edit Site Content</span>
           <span className="admin-quick-arrow" aria-hidden="true">→</span>
         </Link>
+        <Link to="/admin/promotions" className="admin-quick-card">
+          <span>Manage Promotions</span>
+          <span className="admin-quick-arrow" aria-hidden="true">→</span>
+        </Link>
       </div>
     </div>
   );

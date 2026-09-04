@@ -8196,5 +8196,358 @@ section + section {
 }
 
 
+/* ═══════════════════════════════════════════════════════════════
+   PROMOTIONS — Promotion Manager V1
+   Homepage editorial section, Stays reminder, smart campaign popup.
+   Reuses existing tokens/eyebrow/heading/button classes throughout;
+   the .promo-*-grade rules follow the exact bottom-fade +
+   mix-blend-multiply technique already used by .hw-img-grade /
+   .hgs-grade / .hwt-media-grade elsewhere in this file.
+   ═══════════════════════════════════════════════════════════════ */
+
+.promo-section {
+  position: relative;
+  padding: clamp(3rem, 8vw, 5rem) 0;
+}
+
+.promo-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--ink-mid) 0%, var(--bg-warm) 100%);
+  border: 1px solid rgba(232,169,92,0.16);
+  box-shadow: 0 2px 10px rgba(8,5,2,0.3), 0 30px 70px rgba(0,0,0,0.35);
+}
+
+.promo-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.promo-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.promo-media-grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(18,13,7,0.75) 0%, rgba(18,13,7,0.1) 55%, transparent 100%);
+}
+.promo-media-grade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(201,133,58,0.14);
+  mix-blend-mode: multiply;
+}
+
+.promo-info {
+  position: relative;
+  padding: clamp(1.75rem, 5vw, 3rem);
+}
+
+.promo-desc {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 46ch;
+}
+
+.promo-offer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.promo-discount-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1.2rem;
+  background: linear-gradient(135deg, var(--amber) 0%, var(--amber-light) 100%);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  border-radius: 100px;
+  box-shadow: 0 6px 24px rgba(201,133,58,0.4);
+  white-space: nowrap;
+}
+
+.promo-condition {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.promo-benefits {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.promo-benefits li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-bright);
+}
+
+.promo-benefits li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber-light);
+  box-shadow: 0 0 8px var(--amber-light);
+}
+
+.promo-cta {
+  margin-top: 2rem;
+}
+
+@media (min-width: 1025px) {
+  .promo-banner {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .promo-media {
+    width: 46%;
+    aspect-ratio: auto;
+  }
+  .promo-info {
+    width: 54%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(2.5rem, 4vw, 4rem);
+  }
+  .promo-banner--no-media .promo-info {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .promo-banner--no-media .promo-offer-row {
+    justify-content: center;
+  }
+}
+
+/* ─── STAYS PROMO REMINDER ──────────────────────────────────────── */
+
+.promo-reminder {
+  padding: clamp(1.5rem, 4vw, 2.5rem) 0 0;
+}
+
+.promo-reminder-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 18px;
+  background: rgba(201,133,58,0.08);
+  border: 1px solid rgba(201,133,58,0.24);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.promo-reminder-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--text-bright);
+  margin-top: 0.35rem;
+}
+
+.promo-reminder-sub {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--amber-light);
+  font-weight: 600;
+}
+
+.promo-reminder-cta {
+  align-self: flex-start;
+}
+
+@media (min-width: 1025px) {
+  .promo-reminder-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .promo-reminder-cta { align-self: center; }
+}
+
+/* ─── SMART CAMPAIGN POPUP ──────────────────────────────────────── */
+
+.promo-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(10,7,3,0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: promoBackdropIn 0.5s var(--ease-expo);
+}
+
+.promo-popup {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 22px;
+  background: linear-gradient(165deg, var(--ink-mid) 0%, var(--bg-warm) 100%);
+  border: 1px solid rgba(232,169,92,0.2);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.6), 0 4px 20px rgba(0,0,0,0.4);
+  animation: promoPopupIn 0.55s var(--ease-expo);
+}
+
+.promo-popup-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(18,13,7,0.55);
+  color: var(--text-bright);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.3s, transform 0.3s var(--ease-expo);
+}
+.promo-popup-close:hover { background: rgba(18,13,7,0.8); transform: scale(1.06); }
+.promo-popup-close:focus-visible { outline: 2px solid var(--amber-light); outline-offset: 2px; }
+
+.promo-popup-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.promo-popup-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.promo-popup-media-grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(18,13,7,0.92) 0%, rgba(18,13,7,0.2) 45%, transparent 75%);
+}
+.promo-popup-media-grade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(201,133,58,0.14);
+  mix-blend-mode: multiply;
+}
+
+.promo-popup-media-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  padding: 1.5rem;
+}
+
+.promo-popup-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-bright);
+  margin-top: 0.35rem;
+  line-height: 1.2;
+}
+
+.promo-popup-media-overlay .promo-discount-pill {
+  margin-top: 0.85rem;
+}
+
+.promo-popup-footer,
+.promo-popup-textbody {
+  padding: 1.5rem;
+}
+
+.promo-popup-summary {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.promo-popup-cta {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1.1rem;
+}
+
+.promo-popup--text-only .promo-popup-textbody {
+  text-align: center;
+  padding: 2.5rem 1.75rem 2rem;
+}
+
+.promo-popup-offer-row {
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+@keyframes promoBackdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes promoPopupIn {
+  from { opacity: 0; transform: scale(0.94) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-popup-backdrop,
+  .promo-popup {
+    animation: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .promo-popup {
+    max-width: 440px;
+  }
+}
+
+
 
 

@@ -5,6 +5,7 @@ const ENTITY_SECTION = {
   gallery_image: 'Gallery',
   inquiry: 'Inquiries',
   site_content: 'Site Content',
+  promotion: 'Promotions',
   staff: 'Staff',
   settings: 'Settings',
   account: 'Account',
