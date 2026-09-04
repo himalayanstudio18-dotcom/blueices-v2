@@ -38,15 +38,22 @@ function startCooldown(promotionId) {
    Popup" can be previewed pixel-for-pixel against a merged draft row,
    including both the image-forward and text-only fallback layouts. */
 export function PromotionPopupView({ promo, lang, whatsappNumber, onClose }) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
   useEffect(() => {
-    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    function onKey(e) {
+      if (e.key !== 'Escape') return;
+      if (lightboxOpen) setLightboxOpen(false);
+      else onClose();
+    }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, lightboxOpen]);
 
   const waUrl = buildPromotionWhatsAppUrl(promo.raw, lang, whatsappNumber);
   const hasMedia = !!promo.imageUrl;
   const summary = [promo.discountLabel, promo.conditionText, promo.priceLabel].filter(Boolean).join(' · ');
+  const imageAlt = promo.headline ? `${promo.headline} — promotion image` : 'Promotion image';
 
   return (
     <div className="promo-popup-backdrop" role="dialog" aria-modal="true" aria-label="Current promotion" onClick={onClose}>
@@ -55,15 +62,20 @@ export function PromotionPopupView({ promo, lang, whatsappNumber, onClose }) {
 
         {hasMedia ? (
           <>
-            <div className="promo-popup-media">
-              <img src={promo.imageUrl} alt="" className="promo-popup-media-img" />
+            <button
+              type="button"
+              className="promo-popup-media promo-popup-media-trigger"
+              aria-label={`View larger image${promo.headline ? `: ${promo.headline}` : ''}`}
+              onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+            >
+              <img src={promo.imageUrl} alt={imageAlt} className="promo-popup-media-img" />
               <span className="promo-popup-media-grade" aria-hidden="true"></span>
               <div className="promo-popup-media-overlay">
                 {promo.eyebrow && <p className="eyebrow-gold">{promo.eyebrow}</p>}
                 <h3 className="promo-popup-heading">{promo.headline}</h3>
                 {promo.discountLabel && <span className="promo-discount-pill">{promo.discountLabel}</span>}
               </div>
-            </div>
+            </button>
             <div className="promo-popup-footer">
               {summary && <p className="promo-popup-summary">{summary}</p>}
               <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn-warm promo-popup-cta">
@@ -90,6 +102,31 @@ export function PromotionPopupView({ promo, lang, whatsappNumber, onClose }) {
           </div>
         )}
       </div>
+
+      {hasMedia && lightboxOpen && (
+        <div
+          className="promo-lightbox-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged promotion image"
+          onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
+        >
+          <button
+            type="button"
+            className="promo-lightbox-close"
+            aria-label="Close enlarged image"
+            onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
+          >
+            ✕
+          </button>
+          <img
+            src={promo.imageUrl}
+            alt={imageAlt}
+            className="promo-lightbox-img"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

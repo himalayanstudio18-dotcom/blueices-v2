@@ -8463,6 +8463,22 @@ section + section {
   display: block;
 }
 
+.promo-popup-media-trigger {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.promo-popup-media-trigger:focus-visible {
+  outline: 2px solid var(--amber-light);
+  outline-offset: 2px;
+}
+
 .promo-popup-media-grade {
   position: absolute;
   inset: 0;
@@ -8546,6 +8562,68 @@ section + section {
   .promo-popup {
     max-width: 440px;
   }
+}
+
+/* ─── PROMOTION CREATIVE LIGHTBOX ───────────────────────────────── */
+
+.promo-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(6,4,2,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: promoBackdropIn 0.35s var(--ease-expo);
+}
+
+.promo-lightbox-img {
+  display: block;
+  max-width: min(92vw, 900px);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.6);
+  animation: promoPopupIn 0.4s var(--ease-expo);
+}
+
+.promo-lightbox-close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10001;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(18,13,7,0.65);
+  color: var(--text-bright);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.3s, transform 0.3s var(--ease-expo);
+}
+.promo-lightbox-close:hover { background: rgba(18,13,7,0.85); transform: scale(1.06); }
+.promo-lightbox-close:focus-visible { outline: 2px solid var(--amber-light); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-lightbox-backdrop,
+  .promo-lightbox-img {
+    animation: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .promo-lightbox-backdrop { padding: 1rem; }
+  .promo-lightbox-img { max-width: 94vw; max-height: 80vh; }
+  .promo-lightbox-close { top: 0.75rem; right: 0.75rem; width: 40px; height: 40px; }
 }
 
 
